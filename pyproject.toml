@@ -11,7 +11,7 @@ requires-python = ">=3.8"
 license = "MIT"
 keywords = []
 authors = [
-  { name = "Kristy", email = "kristyhoran15@gmail.com" },
+  { name = "Kristy Horan", email = "kristyhoran15@gmail.com" },
 ]
 classifiers = [
   "Development Status :: 4 - Beta",
@@ -27,9 +27,9 @@ classifiers = [
 dependencies = []
 
 [project.urls]
-Documentation = "https://github.com/Kristy/datasmryzr#readme"
-Issues = "https://github.com/Kristy/datasmryzr/issues"
-Source = "https://github.com/Kristy/datasmryzr"
+Documentation = "https://github.com/kristyhoran/datasmryzr#readme"
+Issues = "https://github.com/kristyhoran/datasmryzr/issues"
+Source = "https://github.com/kristyhoran/datasmryzr"
 
 [tool.hatch.version]
 path = "src/datasmryzr/__about__.py"
