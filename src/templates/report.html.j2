@@ -16,9 +16,6 @@
     <!-- <link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/buttons/1.5.6/css/buttons.dataTables.min.css" rel="stylesheet"> -->
 
-    <!-- Graphing library -->
-    
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
@@ -41,7 +38,7 @@
         }
         header {
                 background-color: {{ background_color }};
-                color: aliceblue;
+                color: {{ font_color }};
         }
         svg.text.branch-support {
           display:none;
@@ -72,12 +69,12 @@
 
         .btn-outline-primary:hover {
           background-color:  {{ background_color }};
-          color: aliceblue;
+          color: {{ font_color }};
         }
 
         .btn-outline-primary:not(:disabled):not(.disabled).active {
           background-color:  {{ background_color }};
-          color: aliceblue;
+          color: {{ font_color }};
         }
 
         #current-table {
@@ -92,12 +89,12 @@
 
         .btn-outline-secondary:hover {
           background-color:  {{ background_color }};
-          color: aliceblue;
+          color: {{ font_color }};
         }
 
         .btn-outline-secondary:not(:disabled):not(.disabled).active {
           background-color:  {{ background_color }};
-          color: aliceblue;
+          color: {{ font_color }};
         }
         .page-link {
           color:{{ background_color }};
@@ -106,7 +103,7 @@
         .page-item.active .page-link{
           background-color:  {{ background_color }};
           border-color:{{ background_color }};
-          color: aliceblue;
+          color: {{ font_color }};
         }
         #current-table{
     background-color:white;
@@ -117,14 +114,12 @@
   background-color:{{ background_color }};
 }
 
-#version-table .tabulator-col {
-  color:white;
-}
+
 
 /*Theme the header*/
 #current-table .tabulator-header {
     background-color:{{ background_color }};
-    color:#fff;
+    color:{{ font_color }};
 }
 
 /*Allow column header names to wrap lines*/
@@ -183,11 +178,6 @@
       </div>
     </div>
 
-<div id="help-button" style = "float:right;">
-  <!-- <button type="button" class="btn btn-sm btn-outline-secondary zoom-button" id = "help" data-toggle="modal" data-target="#myModal3" data-placement="top" title="Select"> Helpful tips </button>     -->
-  <!-- <button type="button" class="btn btn-sm btn-outline-secondary version-button" id = "version"> Software versions </button>     -->
-  <!-- <button type="button" class="btn btn-sm btn-outline-secondary" id = "nwk" ><span data-feather="arrow-down"> Download newick </button>         -->
-</div>
 <!-- div for summary table and phylogenetic tree -->
 <div class= "container-fluid">
 <!-- buttons -->

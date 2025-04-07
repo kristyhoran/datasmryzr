@@ -46,7 +46,7 @@ def _get_distances(distances:str) -> pd.DataFrame:
         raise SystemError
     
 
-def _plot_histogram(distances:str) -> dict:
+def _plot_histogram(distances:str,bar_color:str = '#216cb8') -> dict:
     """
     Function to plot the pairwise distances between isolates as a histogram.
     Args:
@@ -57,7 +57,7 @@ def _plot_histogram(distances:str) -> dict:
     df = _get_distances(distances)
     try:
         
-        chart = alt.Chart(df).mark_bar().encode(
+        chart = alt.Chart(df).mark_bar(color = f"{bar_color}").encode(
                             alt.X('value', axis = alt.Axis(title = 'Pairwise SNP distance')),
                             y=alt.Y('count()', axis= alt.Axis(title = "Frequency"))
                         ).properties(
