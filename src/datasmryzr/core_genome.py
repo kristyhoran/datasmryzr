@@ -9,7 +9,21 @@ import csv
 
 from datasmryzr.utils import check_file_exists
 
+alt.data_transformers.disable_max_rows()
+
 VCF_COLUMNS_TO_IGNORE = ['#CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER', 'INFO', 'FORMAT']
+
+def check_file_exists(file_path: str) -> bool:
+    """
+    Check if a file exists at the given path.
+
+    Args:
+        file_path (str): Path to the file.
+
+    Returns:
+        bool: True if the file exists, False otherwise.
+    """
+    return pathlib.Path(file_path).exists()
 
 def _get_offset(reference:str) -> tuple:
     """
@@ -38,7 +52,7 @@ def get_bin_size(_dict):
     for d in _dict:
         sum_len = sum_len + _dict[d]['length']
     
-    _maxbins = int(sum_len/3000)
+    _maxbins = int(sum_len/5000)
     if _maxbins == 0:
         print(f"Something has gone wrong - the maxbins value should be > 0.")
     return _maxbins
@@ -84,6 +98,7 @@ def get_contig_breaks(_dict:dict) -> list:
 
     return for_contigs
 
+
 def _read_vcf(vcf_file:str) -> str:
     """
     Function to read a VCF file and yield lines.
@@ -92,41 +107,45 @@ def _read_vcf(vcf_file:str) -> str:
     Yields:
         str: Lines from the VCF file.
     """
-
+    lines = []
     try:
         with gzip.open(vcf_file, 'rt') as f:
             for line in f:
-                if line.startswith('##'):
-                    continue
-                yield line                     
+                if not line.startswith('##'):
+                    lines.append(line)
+            return lines                   
     except gzip.BadGzipFile:
         with open(vcf_file, 'r') as f:
             for line in f:
-                if line.startswith('##'):
-                    continue
-                yield line
+                if not line.startswith('##'):
+                    lines.append(line)
+            return lines   
     except Exception as e:
         print(f"Error reading VCF file: {e}")
         print(f"Please check the file is a valid vcf file.")
        
         raise SystemError
     
-def _get_vcf(vcf_file:str) -> list:
+def _get_vcf(vcf_file:str) -> pd.DataFrame:
     """
     Function to read a VCF file and return a list of dictionaries.
     Args:
         vcf_file (str): Path to the VCF file.
     Returns:
-        list: List of dictionaries containing the VCF data.
+        df: pd.DataFrame: Dataframe containing the VCF data.
     """
-
+    rows = []
     reader = csv.reader(_read_vcf(vcf_file), delimiter='\t')
+    header = next(reader)
+    for row in reader:
+        rows.append(row)
     
-    return reader
+    df = pd.DataFrame(rows, columns=header)
+    return df
 
 
 
-def _plot_snpdensity(reference:str,vcf_file:str, mask_file:str = '') -> alt.Chart:
+def _plot_snpdensity(reference:str,vcf_file:str, mask_file:str = '', bar_color:str = '#216cb8') -> alt.Chart:
     """
     Function to plot the SNP density across a genome.
     Args:
@@ -144,49 +163,49 @@ def _plot_snpdensity(reference:str,vcf_file:str, mask_file:str = '') -> alt.Char
     
     _dict,offset = _get_offset(reference = f"{pathlib.Path(reference)}")
     chromosomes = list(_dict.keys())
-    results = _get_vcf(vcf_file )
-
+    results = _get_vcf(vcf_file )    
     _maxbins = get_bin_size(_dict = _dict)
-
-
     # collate all snps in snps.tab
     vars = {}
-    for result in results:
-        
+    for result in results.iterrows():
+        # print(result)
         for chromosome  in chromosomes: #for each chromosome in the reference
                 if chromosome not in vars: # if chromosome not in the dict create it
                     vars[chromosome] = {}
-                if chromosome in result["#CHROM"]: # if the chromosome in the result
-                    pos = int(result["POS"]) # get the position
-                    for col in result: 
+                if chromosome in result[1]["#CHROM"]: # if the chromosome in the result
+                    # print(result[1]["#CHROM"])
+                    pos = int(result[1]["POS"]) # get the position
+                    for col in result[1].keys(): # for each isolate in the result
+                        # print(col)
                         if col in VCF_COLUMNS_TO_IGNORE:# for each isolate in the result
                             continue
-                        if result[col] != '0': # if the result is not 0
+                        if result[1][col] != '0': # if the result is not 0
                             if pos not in vars[chromosome]: # increment the value of the postion
                                 vars[chromosome][pos] = 1
                             else:
                                 vars[chromosome][pos] = vars[chromosome][pos] + 1
 
-           
-    # now generate list for x and y value in graph
+    # # now generate list for x and y value in graph
     data = {}
     for var in vars:
         for pos in vars[var]:
             offset = _dict[var]['offset']
             data[pos + offset] = vars[var][pos]
     df = pd.DataFrame.from_dict(data, orient='index',columns=['vars']).reset_index()
+    
     # check if mask file used - if yes grey it out in the graph.
     df = check_masked(mask_file = mask_file, df = df,_dict = _dict)
     # get positions of the contig breaks
     for_contigs = get_contig_breaks(_dict = _dict)
     # set colours
     domain = ['masked', 'unmasked']
-    range_ = ['#d9dcde', '#216cb8']
+    range_ = ['#d9dcde', f"{bar_color}"]
     # do bar graphs
     # if mask_file != 'no_mask':
-    bar = alt.Chart(df).mark_bar().encode(
+    bar = alt.Chart(df).mark_bar(binSpacing=0).encode(
         x=alt.X('index:Q', bin=alt.Bin(maxbins=_maxbins), title = "Core genome position.", axis=alt.Axis(ticks=False)),
-        y=alt.Y('sum(vars):Q',title = "Variants observed (per 500 bp)"),
+        y=alt.Y('vars:Q',title = "Variants observed per 5MB", axis=alt.Axis(ticks=False)),
+        tooltip = [alt.Tooltip('index:Q', title = 'Position'), alt.Tooltip('sum(vars):Q', title = 'SNPs')],
         color=alt.Color('mask', scale = alt.Scale(domain=domain, range=range_), legend=None)
     )
 
@@ -194,7 +213,7 @@ def _plot_snpdensity(reference:str,vcf_file:str, mask_file:str = '') -> alt.Char
     graphs = [bar]
     if for_contigs != []:
         for line in for_contigs:
-            graphs.append(alt.Chart().mark_rule(strokeDash=[3, 3], size=1, color = 'grey').encode(x = alt.datum(line)))
+            graphs.append(alt.Chart().mark_rule(strokeDash=[3, 3], size=0.5, color = 'grey').encode(x = alt.datum(line)))
         
     chart = alt.layer(*graphs).configure_axis(
                     grid=False
