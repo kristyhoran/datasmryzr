@@ -8,16 +8,7 @@
     <title>{{ title }}</title>
  
     <!-- Bootstrap -->
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Optional theme -->
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-theme.min.css" rel="stylesheet">
-    
-
-    <!-- <link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/buttons/1.5.6/css/buttons.dataTables.min.css" rel="stylesheet"> -->
-
-    
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
@@ -25,20 +16,44 @@
   
     <!-- Icon -->
     <script src="https://unpkg.com/feather-icons"></script>
-    <!-- Datatables -->
+    
     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css" rel="stylesheet">
-    <!-- drag select jquery -->
+       
     <link href="https://unpkg.com/tabulator-tables/dist/css/tabulator.min.css" rel="stylesheet">
     <script type="text/javascript" src="https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js"></script>
     
-
     <style type="text/css">
+		h6 {
+			color: {{ background_color }};
+		}
+		.red {
+			background-color: red;	
+			height: 10px;
+  			width: 10px;
+		}
+		.green {
+			background-color: green;	
+			height: 10px;
+  			width: 10px;
+		}
+		.blue {
+			background-color: blue;	
+			height: 10px;
+  			width: 10px;
+		}
+		{% for color in colors %}
+		.{{ color }} {
+			background-color: {{ color.color }};
+			height: 10px;
+			width: 10px;
+		}
+		{% endfor %}
         h2, h3 {
           padding:10px;
         }
         header {
                 background-color: {{ background_color }};
-                color: {{ font_color }};
+                color: {{ font-color }};
         }
         svg.text.branch-support {
           display:none;
@@ -66,15 +81,19 @@
           color: {{ background_color }};
           border-color: {{ background_color }};
         }
+		.dropdown-item.active, .dropdown-item:active {
+		  background-color: {{ font-color }};
+		  color: {{ background_color }};
+		}
 
         .btn-outline-primary:hover {
           background-color:  {{ background_color }};
-          color: {{ font_color }};
+          color: {{ font-color }};
         }
 
         .btn-outline-primary:not(:disabled):not(.disabled).active {
           background-color:  {{ background_color }};
-          color: {{ font_color }};
+          color: {{ font-color }};
         }
 
         #current-table {
@@ -89,12 +108,12 @@
 
         .btn-outline-secondary:hover {
           background-color:  {{ background_color }};
-          color: {{ font_color }};
+          color: {{ font-color }};
         }
 
         .btn-outline-secondary:not(:disabled):not(.disabled).active {
           background-color:  {{ background_color }};
-          color: {{ font_color }};
+          color: {{ font-color }};
         }
         .page-link {
           color:{{ background_color }};
@@ -103,7 +122,7 @@
         .page-item.active .page-link{
           background-color:  {{ background_color }};
           border-color:{{ background_color }};
-          color: {{ font_color }};
+          color: {{ font-color }};
         }
         #current-table{
     background-color:white;
@@ -114,12 +133,14 @@
   background-color:{{ background_color }};
 }
 
-
+#version-table .tabulator-col {
+  color:white;
+}
 
 /*Theme the header*/
 #current-table .tabulator-header {
     background-color:{{ background_color }};
-    color:{{ font_color }};
+    color:#fff;
 }
 
 /*Allow column header names to wrap lines*/
@@ -144,39 +165,12 @@
   </head>
   <body>
     <header>
-      <h1 class="left" style="margin:5px;">{{ title }}</h1>
-        <p class ="right" style="margin:5px;"> Data generated {{ date }} by {{ user }} </p>
+      <h1 class="left" style="margin:5px;">Bohra</h1>
+        <p class ="right" style="margin:5px;"> Data generated 2025-04-07 by khhor </p>
         <hr>
     </header>
-  <!-- Modals - individual isolates -->
-    <!-- Modal for tables for each isolate -->
-      <!-- modal for snp-distances -->
-      <div class="modal fade" id="myModal2" role="dialog">
-        <div class="modal-dialog modal-dialog-centered modal-xl" >
-          <div class="modal-content">
-            <h3 style= "color: {{ background_color }};"> SNP distances </h3>
-              <table id="" class="table table-striped table-bordered  modal-selected-snps-table">
-                          
-              </table>
-          </div>
-        </div>
-      </div>
-  <!-- modal for help -->
-    <div class="modal fade" id="myModal3" role="dialog">
-      <div class="modal-dialog modal-dialog-centered modal" >
-        <div class="modal-content">
-          <h2 class="modal-title" style= "color: {{ background_color }}; margin:3px;"> Information </h2>
-          <ul>
-          <li><h3 style="margin:6px;"> Download tree</h3></li>
-          <p style="margin:10px;"> To download a newick file right click on tree and select export as newick</p>
-          <li><h3 style="margin:6px;"> Isolate details</h3></li>
-          <p style="margin:10px;"> Select an isolate node from the tree to see isolate specific details</p>
-          <li><h3 style="margin:6px;"> SNP distances </h3></li>
-          <p style="margin:10px;">Select the parent node to display pariwise SNP distances</p>
-        </ul>
-        </div>
-      </div>
-    </div>
+    
+
 
 <!-- div for summary table and phylogenetic tree -->
 <div class= "container-fluid">
@@ -184,25 +178,16 @@
 {% if phylo == 'phylo' %}
 <button type="button" class="btn btn-primary btn-xlg btn-outline-primary btn-lg phylogeny-button"> Phylogenetic Tree</button>
 {% endif %}
+
 {% for t,v in tables.items() %}
   <button type="button" class="btn btn-primary btn-xlg btn-outline-primary btn-lg detail-button {{v.link}}-button">{{v.name}}</button>
 {% endfor %}
 
-<!-- <div id = "software-versions" class = "versions" style = "display: none;">
-  <table class="table" id = "version-table">     
-    <thead>
-      <tr>
-        {{version_head}}
-      </tr>
-    </thead>
-    <tbody>
-      {{version_body}}
-    </tbody>
-  </table>
-</div> -->
 <div id = "empty-table"></div>
 <div id="comment"></div>
+  
 <div id = "snp-distances-graph" class = "hidden-graph" style="display:none;">  <!-- placeholder for graphs  --> </div>
+<div id = "snp-distances-heatmap" class = "hidden-graph" style="display:none;">  <!-- placeholder for graphs  --> </div>
 <div id = "snp-density-graph" class = "hidden-graph" style="display: none;">  <!-- placeholder for graphs  --> </div>
 <div id="table-download" style="display: none;">
   <button type="button" class="btn btn-sm btn-outline-secondary csv-download-button" id = "download-csv"> download csv </button>    
@@ -214,19 +199,52 @@
   <div id = "pan-svg" style = "display:none;margin:10px;">
     {{ pan_svg }}
   </div>
+  </div>
 {% if phylo == 'phylo' %}
   <div id = "phylogeny">
-    <button type="button" class="btn btn-sm btn-outline-secondary back-button" id = "step-back"> back </button>    
+    <!-- <button type="button" class="btn btn-sm btn-outline-secondary back-button" id = "step-back"> back </button>     -->
     <button type="button" class="btn btn-sm btn-outline-secondary reset-button" id = "reset-tree"> reset </button> 
     <button type="button" class="btn btn-sm btn-outline-secondary download-button" id = "download-tree"> download </button> 
     <button type="button" class="btn btn-sm btn-outline-secondary export-button" id = "export-tree"> export png </button> 
     <button type="button" class="btn btn-sm btn-outline-secondary search-tree-button" id = "get-iso" style="float: right;"> search </button>   
     <input type = "text" id = "search-iso" placeholder="Search for sample" style="float: right;">
-       
-    <div id="tree_string" style="display: none;">{{newick}}</div>
-    <div id = "phylocanvas" style = "width: 100%; margin:5px; border: 1px solid lightgray;" ></div>
+    
+	<div class="btn-group">
+		<button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		  annotate
+		</button>
+		<div class="dropdown-menu" id="annotate">
+		{% for metadata_column in metadata_columns %}
+		  <a class="dropdown-item" href="#">metadata_column</a>
+		{% endfor %}
+		</div>
+	  </div>
+	  <button type="button" class="btn btn-sm btn-outline-secondary legend-button" id = "toggle-legend"> toggle legend </button> 
+    
+    <div id="tree_string" style="display: none;">
+	{{newick}}
+	</div>
+    <div id = "phylocanvas" class = "tree" style = " width: 90%; margin:5px; border: 1px solid lightgray; float:left  " >
+	<!-- Placeholder for phylogenetic tree -->
+	</div>
+		
+	</div>
+	<div id = "legend" class = "tree" style = " width: 90%; margin:5px; border: 1px solid lightgray; float:left;display: none ;flex-wrap: wrap; ">
+		{% for metadata in data %}
+		<div class = "legend">
+			<h6>{{metadata.category}}</h6>
+			<table style = "margin: 20px;">
+				{% for val in metadata.values %}
+				<tr>
+					<td > <div class = "square {{val.color}}"></div> </td>
+					<td> <div >{{val.label}}</div>  </td>
+				</tr>
+				{% endfor %}
+			</table>
+		</div>
+		{% endfor %}
   </div>
-  {% endif %}
+  
   </div>         
   
         
@@ -248,37 +266,72 @@
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.1.1"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.12.2"></script>
 
-{% block script %}
+
 <script>
+
+function displayWindowSize(){
+    // Get width and height of the window excluding scrollbars
+    var w = document.documentElement.clientWidth;
+    var h = document.documentElement.clientHeight;
+	var div = document.getElementById("phylocanvas");
+	// Set the height of the phylocanvas to be 50% of the window height
+	var phylocanvas = document.getElementById("phylocanvas");
+	phylocanvas.style.height = (h*.5) + "px";
+	return h  
+}
+    
+// set up annotation to extract
+var annot=[];
+
+function updateAnnot(val, annot){
+	console.log(val);
+	console.log(annot);
+	if (val.hasClass("active") && val[0].innerHTML != "Clear" && val[0].innerHTML != "All") {
+		// add to the list of annotations
+		annot.push(val[0].innerHTML);
+	} else {
+		var index = annot.indexOf(val[0].innerHTML);
+		if (index > -1) {
+			annot.splice(index, 1);
+		}
+	}
+
+	return annot;
+}
+var elements = document.getElementsByClassName("dropdown-item");
+for (var i = 0; i < elements.length; i++) {
+  var element = elements[i];
+
+  element.addEventListener("click", function() {
+	$(this).toggleClass("active");
+	annot = updateAnnot(val = $(this), annot = annot);
+	
+  });
+}
+
+
 
 var snp_distance_chart = {{ snp_distances | safe }};
       vegaEmbed('#snp-distances-graph', snp_distance_chart).then(function(result){
-        // var epi_view = result.view;
+        
       });
 
 var snp_density_chart = {{ snp_density | safe }};
   vegaEmbed('#snp-density-graph', snp_density_chart).then(function(result){
-  // var epi_view = result.view;
+  
 });
 
-var version_table = new Tabulator("#version-table", {});
-
-$("button.version-button").click(function(){
-  $("#software-versions").show();
-  $("#comment").empty();
-  $("#phylogeny").hide();
-  // $("#download-csv").hide();
-  $("#current-table").empty();
-  $("#snp-distances-graph").hide();
-  $("#snp-density-graph").hide();
-  $('#pan-svg').hide();
-  $("#empty-table").empty();
+var heatmap_chart = {{ heatmap | safe }};
+  vegaEmbed('#snp-distances-heatmap', snp_distances_heatmap).then(function(result){
+  
 });
+
 
 $("button.phylogeny-button").click(function(){
   $("#current-table").empty();
   $("#table-download").hide();
   $("#phylogeny").show();
+  $(".tree").show();
   $("#comment").empty();
   $("#software-versions").hide();
   $("#snp-distances-graph").hide();
@@ -287,21 +340,32 @@ $("button.phylogeny-button").click(function(){
   $("#empty-table").empty();
 });
 
+$("button.legend-button").click(function(){
+  console.log('toggle legend');
+  var legend = document.getElementById("legend");
+  var btn = $("button.legend-button");
+  if (legend.style.display === "flex") {
+	legend.style.display = "none";
+  } else  {
+	legend.style.display = "flex";
+  } 
+});
+
 $("button.detail-button").click(function(){
   console.log('button clicked');
   $("#table-download").show();
   $("#snp-distances-graph").hide();
+  $("#snp-distances-buttons").hide();
   $('#pan-svg').hide();
   $("#snp-density-graph").hide();
+
   var section = $(this).text().replace(/\s/g,'-').toLowerCase();
   console.log(section);
   var table_dict = {{tables | tojson}};
   var column_dict = {{ columns | tojson }};
-  var comment = {{ comment | tojson }}
-  console.log(table_dict[section]);
-  console.log(column_dict[section]);
-  console.log(column_dict[section].length);
+  var comment = {{ comment | tojson }};
   $("#phylogeny").hide();
+  $(".tree").hide();
   $("#software-versions").hide();
   $("#current-table").empty();
   $("#comment").empty();
@@ -309,6 +373,7 @@ $("button.detail-button").click(function(){
   $("#comment").append("<p style='margin:5px;'><em>" + comment[section] + "</em></p>");
   if(section == 'snp-distances') {
     $("#snp-distances-graph").show();
+	$("#snp-distances-buttons").show();
   }
   if(section == 'core-genome'){
     
@@ -316,6 +381,9 @@ $("button.detail-button").click(function(){
   }
   if(section == 'pan-genome'){
     $('#pan-svg').show();
+  }
+  if(section == 'snp-distances-heatmap'){
+    $('#snp-distances-heatmap').show();
   }
   //create Tabulator on DOM element with id "example-table"
   if(column_dict[section].length > 1){
@@ -347,59 +415,67 @@ $("button.detail-button").click(function(){
       
 });
   
+  
+  
+  function drawTree(tree_string, annot, height){
+	console.log(tree_string);
+	var tree = new phylocanvas.PhylocanvasGL(
+				  document.querySelector("#phylocanvas"),
+					{ 
+					  // size: document.querySelector("#phylocanvas").getBoundingClientRect(),
+					  treeToCanvasRatio:0.5,
+					  showBlockHeaders:true,
+					  blocks: annot,
+					  blockLength: 48, // block size in pixels
+					  blockPadding: 2, // the gap size between blocks in pixels
+					  blockHeaderFontSize:15,
+					  metadata :{{ metadata_tree | safe }},
+					  source: tree_string,
+					  type: phylocanvas.TreeTypes.Rectangular,
+					  nodeSize:6,
+					  showLabels: true,
+					  showLeafLabels: true,
+					  alignLabels:true,
+					  interactive:true,
+					  size : {
+						width: document.querySelector("#phylocanvas").getBoundingClientRect().width,
+						height:height}
+					},
+				  );
+				  
+				  return tree;
+				}
 
-
+  
   var tree_root = ["1"];
-  var num_nodes = {{num_isos}};
-  $("#phylocanvas").height(num_nodes*40);
+  var num_nodes = 4;
+  $("#phylocanvas").height(displayWindowSize()/2);
   var tree_string = document.getElementById('tree_string').innerHTML;
-  console.log(tree_string);
-  var tree = new phylocanvas.PhylocanvasGL(
-                  document.querySelector("#phylocanvas"),
-                    { 
-                      // size: document.querySelector("#phylocanvas").getBoundingClientRect(),
-                      source: tree_string,
-                      type: phylocanvas.TreeTypes.Rectangular,
-                      nodeSize:6,
-                      showLabels: true,
-                      showLeafLabels: true,
-                      alignLabels:true,
-                      interactive:true
-                    },
-                  );
-  // tree.alignLabels;
-  // console.log(tree.handleClick(tree.getHighlightedNode()));
-  // console.log(tree.getGraphWithoutLayout());
+  
+  var tree = drawTree(tree_string, annot, displayWindowSize()/2);
 
   $("#phylocanvas").hover(function(){
-    console.log("phylocanvas hover");
-    console.log();
+    
     var hn = tree.getHighlightedNode();
-    console.log(hn);
+    
   });
-
+  $(".dropdown-item").click(function(){
+	var to_annot = annot;
+	tree.blocks = []; // clear blocks first then add new ones
+	tree.setProps(
+		{blocks: to_annot}
+	)
+  });
   $("#phylocanvas").click(function(event){
-    console.log('phylocanvas clicked');
     var hn = tree.getHighlightedNode();
-    // console.log(hn);
-    // console.log(hn.id);
     tree.setRoot(hn.id);
     tree_root.push(hn.id);
-    console.log(tree_root);
+    
   });
 
 
-  $("#step-back").click(function(){
-    console.log(tree_root);
-    
-    var n = tree_root.pop(-1);
-    console.log(n);
-    
-    tree.setRoot(n);
-  });
 
   $("#reset-tree").click(function(){
-    
     tree.setRoot("1");
   });
 
@@ -447,7 +523,7 @@ $("button.detail-button").click(function(){
     })
   });
 </script>
-{% endblock %}
+
 <script>
 feather.replace()
 </script>
