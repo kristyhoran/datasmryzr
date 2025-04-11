@@ -16,9 +16,19 @@ data = {
     "snp_distances":{},
     "snp_heatmap":{},
     "snp_density":{},
-    "metadata":{},
+    "metadata_tree":{},
     "metadata_columns":[],
-    "colors":{
+    "colors_css":{
         "some_color_name":{"color":"some hash"}
     },
+    "legend":{
+        "category":"",
+        "values":{
+            "color":"",
+            "label":""
+        }
+    },
+    "snp_distances":{},
+    "heatmap":{},
+    "snp_density":{},
 }

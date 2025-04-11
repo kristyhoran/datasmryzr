@@ -26,21 +26,7 @@
 		h6 {
 			color: {{ background_color }};
 		}
-		.red {
-			background-color: red;	
-			height: 10px;
-  			width: 10px;
-		}
-		.green {
-			background-color: green;	
-			height: 10px;
-  			width: 10px;
-		}
-		.blue {
-			background-color: blue;	
-			height: 10px;
-  			width: 10px;
-		}
+		
 		{% for color in colors %}
 		.{{ color }} {
 			background-color: {{ color.color }};
@@ -48,83 +34,82 @@
 			width: 10px;
 		}
 		{% endfor %}
-        h2, h3 {
-          padding:10px;
-        }
-        header {
-                background-color: {{ background_color }};
-                color: {{ font-color }};
-        }
-        svg.text.branch-support {
-          display:none;
-          color:{{ background_color }};
-          font-size: x-small;
-        }
-        .hidden-graph{
-          margin: 2em;
-        }
-        .activeisolate {
-          fill:{{ background_color }};
-          font-size: larger;
+    h2, h3 {
+      padding:10px;
+    }
+    header {
+            background-color: {{ background_color }};
+            color: {{ font_color }};
+    }
+    svg.text.branch-support {
+      display:none;
+      color:{{ background_color }};
+      font-size: x-small;
+    }
+    .hidden-graph{
+      margin: 2em;
+    }
+    .activeisolate {
+      fill:{{ background_color }};
+      font-size: larger;
 
-        }
-        @media (min-width: 768px) {
-        .modal-xl {
-        max-width: 90%; 
-                }
-        }
-
-        .details {
-                display: none;
-        }
-        .btn-outline-primary {
-          color: {{ background_color }};
-          border-color: {{ background_color }};
-        }
+    }
+    @media (min-width: 768px) {
+    .modal-xl {
+    max-width: 90%; 
+            }
+    }
+    .details {
+            display: none;
+    }
+    .btn-outline-primary {
+      color: {{ background_color }};
+      border-color: {{ background_color }};
+    }
 		.dropdown-item.active, .dropdown-item:active {
-		  background-color: {{ font-color }};
+		  background-color: {{ font_color }};
 		  color: {{ background_color }};
 		}
 
-        .btn-outline-primary:hover {
-          background-color:  {{ background_color }};
-          color: {{ font-color }};
-        }
+    .btn-outline-primary:hover {
+      background-color:  {{ background_color }};
+      color: {{ font_color }};
+    }
 
-        .btn-outline-primary:not(:disabled):not(.disabled).active {
-          background-color:  {{ background_color }};
-          color: {{ font-color }};
-        }
+    .btn-outline-primary:not(:disabled):not(.disabled).active {
+      background-color:  {{ background_color }};
+      color: {{ font_color }};
+    }
 
-        #current-table {
-          margin-top:20px;
-          border:none;
-        }
+    #current-table {
+      margin-top:20px;
+      border:none;
+    }
 
-        .btn-outline-secondary {
-          color: {{ background_color }};
-          border-color: {{ background_color }};
-        }
+    .btn-outline-secondary {
+      color: {{ background_color }};
+      border-color: {{ background_color }};
+    }
 
-        .btn-outline-secondary:hover {
-          background-color:  {{ background_color }};
-          color: {{ font-color }};
-        }
+    .btn-outline-secondary:hover {
+      background-color:  {{ background_color }};
+      color: {{ font_color }};
+    }
 
-        .btn-outline-secondary:not(:disabled):not(.disabled).active {
-          background-color:  {{ background_color }};
-          color: {{ font-color }};
-        }
-        .page-link {
-          color:{{ background_color }};
-          
-        }
-        .page-item.active .page-link{
-          background-color:  {{ background_color }};
-          border-color:{{ background_color }};
-          color: {{ font-color }};
-        }
-        #current-table{
+    .btn-outline-secondary:not(:disabled):not(.disabled).active {
+      background-color:  {{ background_color }};
+      color: {{ font_color }};
+    }
+    .page-link {
+      color:{{ background_color }};
+      
+    }
+    .page-item.active .page-link{
+      background-color:  {{ background_color }};
+      border-color:{{ background_color }};
+      color: {{ font_color }};
+    }
+    #current-table{
     background-color:white;
     /* border: 1px solid #333; */
     border-radius: 4px;
@@ -166,7 +151,7 @@
   <body>
     <header>
       <h1 class="left" style="margin:5px;">Bohra</h1>
-        <p class ="right" style="margin:5px;"> Data generated 2025-04-07 by khhor </p>
+        <p class ="right" style="margin:5px;"> Data generated {{date}} by {{user}} </p>
         <hr>
     </header>
     
@@ -230,13 +215,13 @@
 		
 	</div>
 	<div id = "legend" class = "tree" style = " width: 90%; margin:5px; border: 1px solid lightgray; float:left;display: none ;flex-wrap: wrap; ">
-		{% for metadata in data %}
+		{% for metadata in legend %}
 		<div class = "legend">
 			<h6>{{metadata.category}}</h6>
 			<table style = "margin: 20px;">
 				{% for val in metadata.values %}
 				<tr>
-					<td > <div class = "square {{val.color}}"></div> </td>
+					<td > <div class = "square {{val.color}}"></div> </td> // color is the class and key in the colors dict and also the "color" in the values dict 
 					<td> <div >{{val.label}}</div>  </td>
 				</tr>
 				{% endfor %}
@@ -281,21 +266,29 @@ function displayWindowSize(){
 }
     
 // set up annotation to extract
-var annot=[];
 
+
+var annot=[];
+var annot_all = {{ metadata_columns | tojson }};
 function updateAnnot(val, annot){
 	console.log(val);
 	console.log(annot);
 	if (val.hasClass("active") && val[0].innerHTML != "Clear" && val[0].innerHTML != "All") {
-		// add to the list of annotations
+		console.log("added " + val[0].innerHTML);
 		annot.push(val[0].innerHTML);
+	} else if (val[0].innerHTML == "All"){
+		annot = annot_all;
+		val.removeClass("active");
+	} else if (val[0].innerHTML == "Clear"){	
+		annot = [];
+		val.removeClass("active");
 	} else {
 		var index = annot.indexOf(val[0].innerHTML);
 		if (index > -1) {
 			annot.splice(index, 1);
 		}
 	}
-
+	// console.log(annot);
 	return annot;
 }
 var elements = document.getElementsByClassName("dropdown-item");
@@ -303,11 +296,26 @@ for (var i = 0; i < elements.length; i++) {
   var element = elements[i];
 
   element.addEventListener("click", function() {
+	console.log("clicked " + this.innerHTML);
+	if (this.innerHTML == "Clear") {
+		for (var i = 0; i < elements.length; i++){
+			elements[i].classList.remove("active");
+		}
+	} else if (this.innerHTML == "All") {
+		for (var i = 0; i < elements.length; i++){
+			if (elements[i].innerHTML == "Clear"){
+				elements[i].classList.remove("active");
+			} else {
+			elements[i].classList += " active";
+		}
+		}
+	}
 	$(this).toggleClass("active");
 	annot = updateAnnot(val = $(this), annot = annot);
-	
+	console.log(annot);
   });
 }
+
 
 
 
