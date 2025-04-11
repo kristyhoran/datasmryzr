@@ -39,11 +39,6 @@ Issues = "https://github.com/kristyhoran/datasmryzr/issues"
 Source = "https://github.com/kristyhoran/datasmryzr"
 
 
-[project.scripts]
-datasmryzr = "datasmryzr.datasmryzr:main"
-
-
-
 [tool.hatch.version]
 path = "src/datasmryzr/__about__.py"
 

@@ -20,7 +20,6 @@ from datasmryzr.smryz import smryz
 @click.option('--font_color', '-fc', help="Specify the font color of the report", type = str, default = "#ffffff", show_default = True)
 @click.option('--config', '-c', help="Path to the config file", type = str, default = f"{pathlib.Path(__file__).parent / 'templates' / 'base_config.json'}", show_default = True)
 @click.option('--version', '-v', is_flag=True, help="Show the version of datasmryzr.")
-
 def smryzr(output:str, title:str, description:str, author:str, filename:list, tree:str, annotate:str, annotate_cols:str, distance_matrix:str, core_genome:str, reference:str, mask:str, template:str, background_color:str, font_color:str, config:str, version:bool):
     """
     This is a small tool to generate a html and pdf files, collating and summarizing your pathogen genomics results tables and trees/networks.
