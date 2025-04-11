@@ -1,8 +1,9 @@
 {
-    "templates": {
-        "default": {
-            "background":"#3973ac",
-            "title":"datasmryzr"
-        }
+    "comments":{
+    "resistome": "* indicative of 90 - 99% identity and >90% coverage to a known resistance gene; ^ indicative of 90 - 99% identity and 50%< coverage <90% to a known resistance gene; p indicative of possible plasmid expression"},
+    "datatype": {
+        "MLST":"input",
+        "ST":"input"
     }
+
 }

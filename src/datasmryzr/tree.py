@@ -15,7 +15,7 @@ def _get_tree_string(tree_file):
         with open(f"{tree_file}", 'r') as t:
             tree = t.read().strip()
     else:
-        tree = 'No tree available'
+        tree = ''
     
     return tree
 

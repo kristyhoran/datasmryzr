@@ -170,11 +170,16 @@
 
 <div id = "empty-table"></div>
 <div id="comment"></div>
+<div id = "snp-distances-buttons" style="display:none;">
+	<button type="button" class="btn btn-sm btn-outline-secondary snps distribution" id = "snp-distances-dist">Distribution</button>    
+	<button type="button" class="btn btn-sm btn-outline-secondary snps heatmap" id = "snp-distances-hmp">Heatmap</button>
+</div>
   
-<div id = "snp-distances-graph" class = "hidden-graph" style="display:none;">  <!-- placeholder for graphs  --> </div>
+<div id = "snp-distances-distribution" class = "hidden-graph" style="display:none;">  <!-- placeholder for graphs  --> </div>
 <div id = "snp-distances-heatmap" class = "hidden-graph" style="display:none;">  <!-- placeholder for graphs  --> </div>
 <div id = "snp-density-graph" class = "hidden-graph" style="display: none;">  <!-- placeholder for graphs  --> </div>
 <div id="table-download" style="display: none;">
+
   <button type="button" class="btn btn-sm btn-outline-secondary csv-download-button" id = "download-csv"> download csv </button>    
   <!-- <button type="button" class="btn btn-sm btn-outline-secondary excel-download-button" id = "download-excel"> download xlsx </button>     -->
 </div>  
@@ -379,10 +384,36 @@ $("button.detail-button").click(function(){
   $("#comment").empty();
   $("#empty-table").empty();
   $("#comment").append("<p style='margin:5px;'><em>" + comment[section] + "</em></p>");
-  if(section == 'snp-distances') {
-    $("#snp-distances-graph").show();
+    if(section == 'snp-distances') {
+  $("#snp-distances-distribution").show();
 	$("#snp-distances-buttons").show();
-  }
+
+	let containingElement = document.querySelector('#snp-distances-buttons');
+
+	document.body.addEventListener('click', function( event ){
+		if( containingElement.contains( event.target ) ){
+			// do nothing, click was inside container
+			console.log('clicking a graph tab');
+			// console.log(event.target.innerHTML.toLowerCase());
+			event.target.classList.add('active');
+		}
+		var dgraphs = document.getElementsByClassName('snps');
+		console.log(dgraphs);
+		for (var i = 0; i < dgraphs.length; i++) {
+			if (dgraphs[i].classList.contains('active')) {
+				console.log('snp-distances-' + dgraphs[i].innerHTML.toLowerCase() + ' is active');
+				
+				$("#snp-distances-" + dgraphs[i].innerHTML.toLowerCase()).show();
+				
+				dgraphs[i].classList.remove('active');
+			} else {
+				$("#snp-distances-" + dgraphs[i].innerHTML.toLowerCase()).hide();
+				dgraphs[i].classList.remove('active');
+			}
+		}
+});
+	
+	
   if(section == 'core-genome'){
     
     $("#snp-density-graph").show();

@@ -7,10 +7,21 @@ import json
 import csv
 from datasmryzr.utils import check_file_exists
 
-CFG = {
-    "MLST":"input",
-    "ST":"input"
-}
+
+def _get_config(path:str) -> dict:
+    """
+    Function to get the configuration file.
+    Args:
+        path (str): Path to the configuration file.
+    Returns:
+        dict: Configuration dictionary.
+    """
+    if not check_file_exists(path):
+        raise FileNotFoundError(f"Configuration file {path} not found.")
+    with open(path, 'r') as f:
+        cfg = json.load(f)
+    
+    return cfg
 
 def _get_delimiter(file:str) -> str:
     """
@@ -30,34 +41,6 @@ def _get_delimiter(file:str) -> str:
             raise ValueError("Unknown delimiter") 
         
 
-
-# "file":"seqdata.txt", 
-#             "title":"Sequence Data", 
-#             "link": "sequence-data", 
-#             "type" : "table",
-#             "comment": "",
-#             "columns" : [
-#                 {"title":"Isolate","field":"Isolate","headerFilter":"input","headerFilterPlaceholder":"Search isolate"},
-#                 {"title": "Reads", "field":"Reads","headerFilter":"number", "headerFilterPlaceholder":"at least...", "headerFilterFunc":">="},
-#                 {"title":"Yield", "field":"Yield","headerFilter":"number", "headerFilterPlaceholder":"at least...", "headerFilterFunc":">="},
-#                 {"title":"GC content", "field":"GC content","headerFilter":"number", "headerFilterPlaceholder":"at least...", "headerFilterFunc":">="},
-#                 {"title":"Min len", "field":"Min len","headerFilter":"number", "headerFilterPlaceholder":"at least...", "headerFilterFunc":">="},
-#                 {"title":"Avg len", "field":"Avg len","headerFilter":"number", "headerFilterPlaceholder":"at least...", "headerFilterFunc":">="},
-#                 {"title":"Max len", "field":"Max len","headerFilter":"number", "headerFilterPlaceholder":"at least...", "headerFilterFunc":">="},
-#                 {"title":"Average quality (% >Q30)", "field":"Average quality (% >Q30)","headerFilter":"number", "headerFilterPlaceholder":"at least...", "headerFilterFunc":">="},
-#                 {"title":"Estimated average depth", "field":"Estimated average depth","headerFilter":"number", "headerFilterPlaceholder":"at least...", "headerFilterFunc":">="}
-#                 ]
-
-# {   "file": "distances.tab", 
-#             "title":"SNP distances", 
-#             "type":"matrix", 
-#             "link":"snp-distances",
-#             "comment": "",
-#             "columns":[]
-#         },
-
-
-
 def _check_numeric(col:str, data:list) -> bool:
     number = set()
     
@@ -76,8 +59,8 @@ def _check_numeric(col:str, data:list) -> bool:
     else:
         return "input"
         
-def _generate_table(_file :str) -> dict:
-    
+def generate_table(_file :str, table_dict:dict, col_dict:dict, cfg_path:str) -> dict:
+    cfg = _get_config(cfg_path)
     dlm = _get_delimiter(_file)
     if check_file_exists(_file):
         with open(_file, 'r') as f:
@@ -86,13 +69,25 @@ def _generate_table(_file :str) -> dict:
             columns = list(reader.fieldnames)
         title = _file.split('/')[-1].split('.')[0].replace('_', ' ').replace('-', ' ')
         link = title.replace(' ', '-').replace('_', '-').lower()
-        table_dict = {link:
-            {'link':link, 'name':title, 'table':[]}
-            }
+        if link in cfg['comments']:
+            comment = cfg['comments'][link]
+        else:
+            comment = {}
+        if table_dict == {}:
+            table_dict = {link:
+                {'link':link, 'name':title, 'table':[]}
+                }
+        else:
+            table_dict[link] = {'link':link, 'name':title, 'table':[]}
+        if col_dict == {}:
+            col_dict = {link: []}
+        else:
+            col_dict[link] = []
+        
         _id =1
-        col_dict = {link: []}
+        
         for col in columns:
-            _type = CFG[col] if col in CFG else _check_numeric(col = col, data = data)
+            _type = cfg['datatype'][col] if col in cfg['datatype'] else _check_numeric(col = col, data = data)
             d ={
                 'title':col,
                 'field':col,
@@ -114,4 +109,4 @@ def _generate_table(_file :str) -> dict:
                 _sample_dict[col] = f"{row[col]}"
             table_dict['table'].append(_sample_dict)
 
-    return table_dict,col_dict
+    return table_dict,col_dict,comment

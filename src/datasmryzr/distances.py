@@ -78,6 +78,7 @@ def _plot_heatmap(distances:str) -> dict:
         dict: Dictionary containing the plot data.
     """
     df = _get_distances(distances)
+    number_of_isolates = len(df['Isolate'].unique())
     try:
         chart = alt.Chart(df).mark_rect().encode(
                             x=alt.X('Isolate:O').title(""),
@@ -85,8 +86,8 @@ def _plot_heatmap(distances:str) -> dict:
                             tooltip = [alt.Tooltip('Isolate:O'), alt.Tooltip('variable:O'), alt.Tooltip('value:Q')],
                             color=alt.Color('value:Q').scale( scheme = "lightorange", reverse= True),
                         ).properties(
-                                width=1200,
-                                height=1200
+                                width=10*number_of_isolates,
+                                height=10*number_of_isolates
                             )
         chart = chart.to_json()
         return chart
