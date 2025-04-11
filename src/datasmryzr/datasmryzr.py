@@ -1,4 +1,4 @@
-import click
+import click,pathlib
 
 
 @click.command()
@@ -14,7 +14,9 @@ import click
 @click.option('--core-genome', '-cg', help="Specify the path to the file that can be used to generate a distribution of variants across a genome - a core.vcf file", type = str)
 @click.option('--reference', '-r', help="Specify the path to the reference file that can be used to generate a distribution of variants across a genome. Required if --core-genome is used.", type = str)
 @click.option('--mask', '-m', help="Specify the path to the mask file that can be used to generate a distribution of variants across a genome. Required if --core-genome is used.", type = str)
-# @click.option('--config', '-c', help="Specify the path to the config file where ", type = str)
+@click.option('--template', '-t', help="Specify the path to the template file", type = str, default = f"{pathlib.Path(__file__).parent}/templates/index.html", show_default = True)
+@click.option('--background_color', '-bg', help="Specify the background color of the report", type = str, default = "#3973ac", show_default = True)
+@click.option('--font_color', '-fc', help="Specify the font color of the report", type = str, default = "#ffffff", show_default = True)
 def smryz():
     """
     This is a small tool to generate a html and pdf files, collating and summarizing your pathogen genomics results tables and trees/networks.

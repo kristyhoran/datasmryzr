@@ -133,7 +133,7 @@ def _get_metadata_tree(df:pd.DataFrame, cols:list, legend: list, color_css:dict)
     return metadata_tree
     
 
-def _construct_annotations(path:str, cols:list) -> dict:
+def construct_annotations(path:str, cols:list) -> dict:
     
     df = _open_file(path)
     df = df.fillna("NA")
