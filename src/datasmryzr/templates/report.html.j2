@@ -27,9 +27,9 @@
 			color: {{ background_color }};
 		}
 		
-		{% for color in colors %}
-		.{{ color }} {
-			background-color: {{ color.color }};
+		{% for key,val in colors_css.items() %}
+		.{{ key }} {
+			background-color: {{ val }};
 			height: 10px;
 			width: 10px;
 		}
@@ -150,9 +150,81 @@
   </head>
   <body>
     <header>
-      <h1 class="left" style="margin:5px;">Bohra</h1>
+      <h1 class="left" style="margin:5px;">{{title}}</h1>
         <p class ="right" style="margin:5px;"> Data generated {{date}} by {{user}} </p>
         <hr>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light" style="border-bottom: #3973ac solid 10px;">
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+        
+        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+        {% if phylo == 'phylo' %}
+          <li class="nav-item active">
+            <a class="nav-link phylogeny-button" href="#">Tree<span class="sr-only">(current)</span></a>
+          </li>
+        {% endif %}
+        {% for t,v in tables.items() %}
+          <li class="nav-item">
+            <a class="nav-link detail-button {{v.link}}-button" href="#">{{v.name}}</a>
+          </li>
+        {% endfor %}
+        </ul>
+      </div>
+      <!-- div for phylogeny buttons -->
+      <div class="hidden-nav-phylo btn-group" id = "hidden-nav-phylo"  style = "float:right; ">
+        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+          <li lass="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Annotate</a>
+            <div class="dropdown-menu" id="annotate">
+            {% for metadata_column in metadata_columns %}
+              <a class="dropdown-item annotate-tree" href="#">{{metadata_column}}</a>
+            {% endfor %}
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item annotate-tree" href="#">All</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item annotate-tree" href="#">Clear</a>
+            </div>
+          </li>
+          <li lass="nav-item">
+            <a class="nav-link legend-button" id = "toggle-legend" href="#">Toggle legend</a>
+          </li>
+          <li lass="nav-item">
+            <a class="nav-link reset-tree-button" href="#">Reset</a>
+          </li>
+          <li lass="nav-item">
+            <a class="nav-link download-tree-button" href="#">Download newick</a>
+          </li>
+          <li lass="nav-item">
+            <a class="nav-link export-tree-button" href="#">Download image</a>
+          </li>
+        </ul>
+      </div>
+      <!-- div for download table button -->
+      <div id = "table-download"  style = "display: none;">
+        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">  
+          <li lass="nav-item">
+            <a class="nav-link csv-download-button download-csv" href="#">Download csv</a>
+          </li>
+          <!-- <li lass="nav-item">
+            <a class="nav-link excel-download-button" id = "download-excel" href="#">download xlsx</a>
+          </li> -->
+        </ul>
+      </div>
+      <!-- div for distance graphs buttons  -->
+      <div class="hidden-graph-nav btn-group" id = "hidden-graphs"  style = "display:none;">
+        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+          <li lass="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Graphs</a>
+            <div class="dropdown-menu" id="annotate">
+              <a class="dropdown-item snps heatmap" id = "snp-distances-hmp" href="#">Heatmap</a>
+              <a class="dropdown-item snps distribution" id = "snp-distances-dist" href="#">Distribution</a>
+           </div>
+          </li>
+        </ul>
+      </div>
+    </nav>
     </header>
     
 
@@ -160,29 +232,18 @@
 <!-- div for summary table and phylogenetic tree -->
 <div class= "container-fluid">
 <!-- buttons -->
-{% if phylo == 'phylo' %}
-<button type="button" class="btn btn-primary btn-xlg btn-outline-primary btn-lg phylogeny-button"> Phylogenetic Tree</button>
-{% endif %}
 
-{% for t,v in tables.items() %}
-  <button type="button" class="btn btn-primary btn-xlg btn-outline-primary btn-lg detail-button {{v.link}}-button">{{v.name}}</button>
-{% endfor %}
+
+
 
 <div id = "empty-table"></div>
 <div id="comment"></div>
-<div id = "snp-distances-buttons" style="display:none;">
-	<button type="button" class="btn btn-sm btn-outline-secondary snps distribution" id = "snp-distances-dist">Distribution</button>    
-	<button type="button" class="btn btn-sm btn-outline-secondary snps heatmap" id = "snp-distances-hmp">Heatmap</button>
-</div>
+
   
 <div id = "snp-distances-distribution" class = "hidden-graph" style="display:none;">  <!-- placeholder for graphs  --> </div>
-<div id = "snp-distances-heatmap" class = "hidden-graph" style="display:none;">  <!-- placeholder for graphs  --> </div>
+<div id = "snp-distances-heatmap" class = "hidden-graph" style="display:none; overflow-x:auto;">  <!-- placeholder for graphs  --> </div>
 <div id = "snp-density-graph" class = "hidden-graph" style="display: none;">  <!-- placeholder for graphs  --> </div>
-<div id="table-download" style="display: none;">
 
-  <button type="button" class="btn btn-sm btn-outline-secondary csv-download-button" id = "download-csv"> download csv </button>    
-  <!-- <button type="button" class="btn btn-sm btn-outline-secondary excel-download-button" id = "download-excel"> download xlsx </button>     -->
-</div>  
 <div id="current-table">
     <!-- placeholder for selected table = put selected table in this div -->    
   </div>
@@ -192,49 +253,36 @@
   </div>
 {% if phylo == 'phylo' %}
   <div id = "phylogeny">
-    <!-- <button type="button" class="btn btn-sm btn-outline-secondary back-button" id = "step-back"> back </button>     -->
-    <button type="button" class="btn btn-sm btn-outline-secondary reset-button" id = "reset-tree"> reset </button> 
-    <button type="button" class="btn btn-sm btn-outline-secondary download-button" id = "download-tree"> download </button> 
-    <button type="button" class="btn btn-sm btn-outline-secondary export-button" id = "export-tree"> export png </button> 
-    <button type="button" class="btn btn-sm btn-outline-secondary search-tree-button" id = "get-iso" style="float: right;"> search </button>   
-    <input type = "text" id = "search-iso" placeholder="Search for sample" style="float: right;">
     
-	<div class="btn-group">
-		<button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-		  annotate
-		</button>
-		<div class="dropdown-menu" id="annotate">
-		{% for metadata_column in metadata_columns %}
-		  <a class="dropdown-item" href="#">metadata_column</a>
-		{% endfor %}
-		</div>
-	  </div>
-	  <button type="button" class="btn btn-sm btn-outline-secondary legend-button" id = "toggle-legend"> toggle legend </button> 
     
     <div id="tree_string" style="display: none;">
-	{{newick}}
-	</div>
+    {{newick}}
+    </div>
     <div id = "phylocanvas" class = "tree" style = " width: 90%; margin:5px; border: 1px solid lightgray; float:left  " >
-	<!-- Placeholder for phylogenetic tree -->
+    <!-- Placeholder for phylogenetic tree -->
+    </div>
+    
 	</div>
-		
-	</div>
-	<div id = "legend" class = "tree" style = " width: 90%; margin:5px; border: 1px solid lightgray; float:left;display: none ;flex-wrap: wrap; ">
-		{% for metadata in legend %}
-		<div class = "legend">
-			<h6>{{metadata.category}}</h6>
-			<table style = "margin: 20px;">
-				{% for val in metadata.values %}
+	<div id = "legend" class = "tree" style = " width: 90%; margin:5px;  display: none ;flex-wrap: wrap; ">
+    {% for category in legend %}
+    <div class = "legend-{{category}}" style = "border:1px dotted lightgray;">
+   	<h6 style="margin: 10px;">{{category}}</h6>
+      {% for lg in legend[category] %}
+      <table style="margin: 20px;" >
+      {% for key,val in lg.items() %}
 				<tr>
-					<td > <div class = "square {{val.color}}"></div> </td> // color is the class and key in the colors dict and also the "color" in the values dict 
-					<td> <div >{{val.label}}</div>  </td>
-				</tr>
-				{% endfor %}
-			</table>
-		</div>
-		{% endfor %}
+          <td > <div class = "square {{val}}"></div> </td> 
+					<td> <div >{{key}}</div>  </td>
+				</tr>	
+      {% endfor %}
+      </table>
+      {% endfor %}
+    </div>
+    {% endfor %}
+		
+		
   </div>
-  
+  {% endif %}
   </div>         
   
         
@@ -269,19 +317,29 @@ function displayWindowSize(){
 	phylocanvas.style.height = (h*.5) + "px";
 	return h  
 }
-    
+
+
+var menus = document.getElementsByClassName("nav-link");
+// to capitalize the first letter of the string
+function capitalizeFirstLetter(val) {
+    return String(val).charAt(0).toUpperCase() + String(val).slice(1);
+}
+// set menu title to capital
+for ( var i = 0; i < menus.length; i++){
+  console.log(menus[i].innerHTML);
+  var new_menu = capitalizeFirstLetter(menus[i].innerHTML);
+  menus[i].innerHTML = new_menu;
+}
 // set up annotation to extract
-
-
 var annot=[];
-var annot_all = {{ metadata_columns | tojson }};
+var annot_all = ["Beta-lactamase (not ESBL or carbapenemase)", "Fosfomycin", "ESBL", "Efflux", "Phenicol/Quinolone", "Trimethoprim", "Gentamicin", "Amikacin/Kanamycin/Tobramycin/Quinolone", "Chloramphenicol", "Streptomycin", "Sulfonamide", "Tetracycline", "Carbapenemase", "Other antimicrobial", "Carbapenemase (MBL)", "Amikacin/Kanamycin", "Quinolone", "Amikacin/Kanamycin/Tobramycin", "Macrolide", "Rifamycin", "Aminoglycosides (Ribosomal methyltransferase)", "Kanamycin", "Gentamicin/Kanamycin/Tobramycin", "ESBL (AmpC type)"];
 function updateAnnot(val, annot){
 	console.log(val);
 	console.log(annot);
-	if (val.hasClass("active") && val[0].innerHTML != "Clear" && val[0].innerHTML != "All") {
+	if (val.hasClass("active") && val.hasClass("annotate-tree") && val[0].innerHTML != "Clear" && val[0].innerHTML != "All") {
 		console.log("added " + val[0].innerHTML);
 		annot.push(val[0].innerHTML);
-	} else if (val[0].innerHTML == "All"){
+	} else if (val[0].innerHTML == "All" && val.hasClass("annotate-tree")){
 		annot = annot_all;
 		val.removeClass("active");
 	} else if (val[0].innerHTML == "Clear"){	
@@ -301,7 +359,9 @@ for (var i = 0; i < elements.length; i++) {
   var element = elements[i];
 
   element.addEventListener("click", function() {
-	console.log("clicked " + this.innerHTML);
+	
+  if (this.classList.contains("annotate-tree")) {
+    console.log("clicked " + this.innerHTML);
 	if (this.innerHTML == "Clear") {
 		for (var i = 0; i < elements.length; i++){
 			elements[i].classList.remove("active");
@@ -310,22 +370,25 @@ for (var i = 0; i < elements.length; i++) {
 		for (var i = 0; i < elements.length; i++){
 			if (elements[i].innerHTML == "Clear"){
 				elements[i].classList.remove("active");
-			} else {
-			elements[i].classList += " active";
+			} else if (elements[i].classList.contains("annotate-tree")){
+        elements[i].classList += " active";
+      } else {
+        elements[i].classList.remove("active");
+      }
+			
 		}
 		}
-	}
+	
 	$(this).toggleClass("active");
 	annot = updateAnnot(val = $(this), annot = annot);
 	console.log(annot);
+  }
   });
 }
 
 
-
-
 var snp_distance_chart = {{ snp_distances | safe }};
-      vegaEmbed('#snp-distances-graph', snp_distance_chart).then(function(result){
+      vegaEmbed('#snp-distances-distribution', snp_distance_chart).then(function(result){
         
       });
 
@@ -334,29 +397,32 @@ var snp_density_chart = {{ snp_density | safe }};
   
 });
 
-var heatmap_chart = {{ heatmap | safe }};
-  vegaEmbed('#snp-distances-heatmap', snp_distances_heatmap).then(function(result){
+var heatmap_chart = {{ snp_heatmap | safe }};
+  vegaEmbed('#snp-distances-heatmap', heatmap_chart).then(function(result){
   
 });
 
 
-$("button.phylogeny-button").click(function(){
+$("a.phylogeny-button").click(function(){
   $("#current-table").empty();
   $("#table-download").hide();
   $("#phylogeny").show();
   $(".tree").show();
+  $("#hidden-nav-phylo").show();
   $("#comment").empty();
   $("#software-versions").hide();
-  $("#snp-distances-graph").hide();
+  $("#snp-distances-distribution").hide();
   $("#snp-density-graph").hide();
+  $("#hidden-graphs").hide();
   $('#pan-svg').hide();
   $("#empty-table").empty();
+  $("#legend").hide();
 });
 
-$("button.legend-button").click(function(){
+$("a.legend-button").click(function(){
   console.log('toggle legend');
   var legend = document.getElementById("legend");
-  var btn = $("button.legend-button");
+  
   if (legend.style.display === "flex") {
 	legend.style.display = "none";
   } else  {
@@ -364,31 +430,34 @@ $("button.legend-button").click(function(){
   } 
 });
 
-$("button.detail-button").click(function(){
+var table_dict = {{tables | tojson}};
+var column_dict = {{ columns | tojson }};
+var comment = {{ comment | tojson }};
+$("a.detail-button").click(function(){
   console.log('button clicked');
   $("#table-download").show();
-  $("#snp-distances-graph").hide();
+  $("#snp-distances-distribution").hide();
   $("#snp-distances-buttons").hide();
   $('#pan-svg').hide();
   $("#snp-density-graph").hide();
-
+  $("#hidden-graphs").hide();
   var section = $(this).text().replace(/\s/g,'-').toLowerCase();
   console.log(section);
-  var table_dict = {{tables | tojson}};
-  var column_dict = {{ columns | tojson }};
-  var comment = {{ comment | tojson }};
+  
   $("#phylogeny").hide();
   $(".tree").hide();
+  $("#hidden-nav-phylo").hide();
   $("#software-versions").hide();
   $("#current-table").empty();
   $("#comment").empty();
   $("#empty-table").empty();
-  $("#comment").append("<p style='margin:5px;'><em>" + comment[section] + "</em></p>");
-    if(section == 'snp-distances') {
+  $("#comment").append("<p style='margin:5px; font-size:small;'><em>" + comment[section] + "</em></p>");
+  
+  if(section == 'distances') {
   $("#snp-distances-distribution").show();
-	$("#snp-distances-buttons").show();
+  $("#hidden-graphs").show();
 
-	let containingElement = document.querySelector('#snp-distances-buttons');
+	let containingElement = document.querySelector('#hidden-graphs');
 
 	document.body.addEventListener('click', function( event ){
 		if( containingElement.contains( event.target ) ){
@@ -404,15 +473,14 @@ $("button.detail-button").click(function(){
 				console.log('snp-distances-' + dgraphs[i].innerHTML.toLowerCase() + ' is active');
 				
 				$("#snp-distances-" + dgraphs[i].innerHTML.toLowerCase()).show();
-				
 				dgraphs[i].classList.remove('active');
 			} else {
 				$("#snp-distances-" + dgraphs[i].innerHTML.toLowerCase()).hide();
-				dgraphs[i].classList.remove('active');
+				
 			}
 		}
-});
-	
+  });
+	}
 	
   if(section == 'core-genome'){
     
@@ -421,9 +489,7 @@ $("button.detail-button").click(function(){
   if(section == 'pan-genome'){
     $('#pan-svg').show();
   }
-  if(section == 'snp-distances-heatmap'){
-    $('#snp-distances-heatmap').show();
-  }
+  
   //create Tabulator on DOM element with id "example-table"
   if(column_dict[section].length > 1){
     var table = new Tabulator("#current-table", {
@@ -432,7 +498,7 @@ $("button.detail-button").click(function(){
     paginationSizeSelector:true,
     movableColumns:true,
     // height:205, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
-    data:table_dict[section]['table'], //assign data to table
+    data:table_dict[section]['tables'], //assign data to table
     layout:"fitColumns", //fit columns to width of table (optional)
     columns:column_dict[section],
     // rowClick:function(e, row){ //trigger an alert message when the row is clicked
@@ -491,7 +557,37 @@ $("button.detail-button").click(function(){
   $("#phylocanvas").height(displayWindowSize()/2);
   var tree_string = document.getElementById('tree_string').innerHTML;
   
-  var tree = drawTree(tree_string, annot, displayWindowSize()/2);
+  if (tree_string.trim() == "") {
+    console.log("No tree available");
+    
+    $("#phylogeny").hide();
+    if( menus[0].innerHTML.includes( "Tree")){
+      console.log(menus[0].innerHTML)
+      var default_table_name = menus[1].innerHTML.toLowerCase();
+    } else {
+      var default_table_name = menus[0].innerHTML.toLowerCase();
+    }
+    var table = new Tabulator("#current-table", {
+    pagination:"local",
+    paginationSize:25,
+    paginationSizeSelector:true,
+    movableColumns:true,
+    // height:205, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
+    data:table_dict[default_table_name]['tables'], //assign data to table
+    layout:"fitColumns", //fit columns to width of table (optional)
+    columns:column_dict[default_table_name],
+    // rowClick:function(e, row){ //trigger an alert message when the row is clicked
+    // 	console.log("Row " + row.getData().id + " Clicked!!!!");
+    // },
+    });
+    $("a.download-csv").click(function(){
+      console.log('clicking download button')
+        table.download("csv", "data.csv", {delimiter:","});
+      });
+  } else {
+    console.log(tree_string);
+    var tree = drawTree(tree_string, annot, displayWindowSize()/2);
+  }
 
   $("#phylocanvas").hover(function(){
     
@@ -514,7 +610,7 @@ $("button.detail-button").click(function(){
 
 
 
-  $("#reset-tree").click(function(){
+  $("a.reset-tree-button").click(function(){
     tree.setRoot("1");
   });
 
@@ -533,14 +629,14 @@ $("button.detail-button").click(function(){
       setTimeout(function() { URL.revokeObjectURL(a.href); }, 1500);
     }
 
-  $("#download-tree").click(function(){
+  $("a.download-tree-button").click(function(){
     console.log('downloading newick');
     var nwk_download = tree.exportNewick();
     var filename = 'bohra.nwk'
     downloadString(nwk_download,'text',filename);
   });
 
-  $("#export-tree").click(function(){
+  $("a.export-tree-button").click(function(){
     console.log('export');
     var png = tree.exportPNG();
     var filename = 'bohra.png';

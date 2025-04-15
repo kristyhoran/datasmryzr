@@ -16,6 +16,7 @@ def _open_file(file_path):
     """
     df = pd.read_csv(file_path, sep = None, engine = 'python')
     return df
+    
 
 def _check_vals(df:pd.DataFrame, cols:list) -> list:
     """
@@ -27,13 +28,18 @@ def _check_vals(df:pd.DataFrame, cols:list) -> list:
         bool: True if the values are valid, False otherwise.
     """
     final_cols = []
+    _id_col = df.columns[0]
     for col in cols:
+        if col not in df.columns:
+            raise ValueError(f"Column {col} not found in dataframe.")
         is_string = True
-        for val in df[col].unique():
-            if isinstance(val, (int, float)):
-                is_string = False
-        if is_string or col in CFG:
-            final_cols.append(col)
+        # print(col)
+        if col != _id_col:
+            for val in df[col].unique():
+                if isinstance(val, (int, float)):
+                    is_string = False
+            if is_string or col in CFG:
+                final_cols.append(col)
         
     return final_cols
 
@@ -46,7 +52,7 @@ def _get_cols(cols:list, df:pd.DataFrame) -> list:
     Returns:
         list: a list of appropriate columns.
     """
-    if cols == []:
+    if cols == "all":
         column_list = _check_vals(df = df, cols = df.columns.tolist())
         return column_list
     else:
@@ -75,42 +81,53 @@ def _get_colors(df:pd.DataFrame, cols:list) -> tuple:
     for col in cols:
         unique_vals = list(df[col].unique())
         length = len(unique_vals)
-        colors = mcp.gen_color_list(length, cmap="tab20b")
-        colors_list = random.shuffle(list(colors))
+        colors = mcp.gen_color(cmap="tab20b", n=length)
+        # colors_list = random.shuffle(list(colors))
         colors_set = set(colors_set).union(set(colors))
 
     # setup the css dict        
     for cl in colors_set:
-        nme = cl.replace("#", "")
+        nme = cl.replace("#", "a")
         if nme not in colors_css:
             colors_css[nme] = cl
-
+    # print(colors_css)
     return colors_css
 
 
 def _make_legend(df:pd.DataFrame, cols:list, color_css:dict) -> dict:
-    legend = []
+    legend = {}
+    # print(color_css)
     for col in cols:
         unique_vals = list(df[col].unique())
+        unique_vals = [val for val in unique_vals if val != "NA"]
         length = len(unique_vals)
-        colors = list(color_css.keys())[:length]
+        # print(unique_vals)
+        colors = list(color_css.keys())
+        # print(colors)
+        # colors = random.shuffle(colors) if len(colors) > 1 else colors
+        # print(colors)
         cols_mapped = zip(unique_vals, colors)
-        lg = {
-            "category": col,
-            "values": {}
-        }
+        # print(cols_mapped)
+        if col not in legend:
+            legend[col] = []
+        # lg = {
+        #     "category": col,
+        #     "values": {}
+        # }
         for val, color in cols_mapped:
-            if val != "NA":
-             
-                lg["values"]["color"] = color
-                lg["values"]["label"] = val
-                legend.append(lg)
+            # print(val, color)
+            lg = {
+                val:color
+            }
+        legend[col].append(lg)
+    # print(legend)
     return legend
 
-def _get_metadata_tree(df:pd.DataFrame, cols:list, legend: list, color_css:dict) -> dict:
-            
+def _get_metadata_tree(df:pd.DataFrame, cols:list, legend: dict, color_css:dict) -> dict:
+    # print(legend)
     metadata_tree = {}
     tiplabel = df.columns[0]
+    # print(color_css)
     for row in df.iterrows():
         metadata_tree[row[1][tiplabel]] = {}
 
@@ -118,40 +135,54 @@ def _get_metadata_tree(df:pd.DataFrame, cols:list, legend: list, color_css:dict)
 
             if col == tiplabel:
                 continue
-            for lg in legend:
-                if lg["category"] == col:
-                    if row[1][col] != "NA":
-                        metadata_tree[row[1][tiplabel]][col] = {
-                            "color": color_css[lg["values"]["color"]],
-                            "label": row[1][col]
-                        }
-                    else:
-                        metadata_tree[row[1][tiplabel]][col] = {
-                            "color": "white",
-                            "label": row[1][col]
-                        }
+            
+            # print(legend[col])
+            color = "white"
+            
+            for lg in legend[col]:
+                # print(row[1][col])
+                # print(lg)
+                if row[1][col] in lg:
+                    color = lg[row[1][col]]
+                    # break
+            # print(color)
+            metadata_tree[row[1][tiplabel]][col] = {
+                "colour": color_css[color] if color in color_css else color,
+                "label": row[1][col]
+            }
+    # print(metadata_tree)      
     return metadata_tree
     
 
 def construct_annotations(path:str, cols:list) -> dict:
-    
-    df = _open_file(path)
-    df = df.fillna("NA")
-    # get columns that contain categorical data
-    metadata_columns = _get_cols(cols = cols, df = df)
-    #  get unique values and assign colors to them
-    colors_css = _get_colors(df = df, cols = metadata_columns)
-    # get the legend for the metadata
-    legend = _make_legend(df = df, cols = metadata_columns, color_css = colors_css)
-    # get the metadata tree
-    metadata_tree = _get_metadata_tree(df = df, cols = metadata_columns, legend = legend, color_css = colors_css)
-    # construct the final data structure
-    data = {
-        "metadata_tree": metadata_tree,
-        "metadata_columns": metadata_columns,
-        "colors_css": colors_css,
-        "legend": legend
-    }
+    if path != "":
+        df = _open_file(path)
+        df = df.fillna("NA")
+        # get columns that contain categorical data
+        
+        metadata_columns = _get_cols(cols = cols, df = df)
+        
+        #  get unique values and assign colors to them
+        colors_css = _get_colors(df = df, cols = metadata_columns)
+        # get the legend for the metadata
+        legend = _make_legend(df = df, cols = metadata_columns, color_css = colors_css)
+        # get the metadata tree
+        metadata_tree = _get_metadata_tree(df = df, cols = metadata_columns, legend = legend, color_css = colors_css)
+        # construct the final data structure
+        # print(legend)
+        data = {
+            "metadata_tree": metadata_tree,
+            "metadata_columns": metadata_columns,
+            "colors_css": colors_css,
+            "legend": legend
+        }
+    else:
+        data = {
+            "metadata_tree": {},
+            "metadata_columns": [],
+            "colors_css": {},
+            "legend": []
+        }
     return data
 
     

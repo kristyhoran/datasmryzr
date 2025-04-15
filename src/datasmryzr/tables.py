@@ -32,7 +32,8 @@ def _get_delimiter(file:str) -> str:
         str: Delimiter used in the file.
     """
     with open(file, 'r') as f:
-        line = f.readline()
+        line = f.read()
+        # print(line)
         if '\t' in line:
             return '\t'
         elif ',' in line:
@@ -59,7 +60,7 @@ def _check_numeric(col:str, data:list) -> bool:
     else:
         return "input"
         
-def generate_table(_file :str, table_dict:dict, col_dict:dict, cfg_path:str) -> dict:
+def generate_table(_file :str, table_dict:dict, col_dict:dict,comment_dict:dict, cfg_path:str) -> dict:
     cfg = _get_config(cfg_path)
     dlm = _get_delimiter(_file)
     if check_file_exists(_file):
@@ -68,17 +69,23 @@ def generate_table(_file :str, table_dict:dict, col_dict:dict, cfg_path:str) -> 
             data = [row for row in reader]
             columns = list(reader.fieldnames)
         title = _file.split('/')[-1].split('.')[0].replace('_', ' ').replace('-', ' ')
+        print(title)
         link = title.replace(' ', '-').replace('_', '-').lower()
         if link in cfg['comments']:
-            comment = cfg['comments'][link]
+            comment=  cfg['comments'][link]
         else:
-            comment = {}
+            comment =  ""
+        if comment_dict == {}:
+            comment_dict = {link:comment}
+        else:
+            comment_dict[link] = comment
         if table_dict == {}:
+            print(f"Creating table for {title}")
             table_dict = {link:
-                {'link':link, 'name':title, 'table':[]}
+                {'link':link, 'name':title, 'tables':[]}
                 }
         else:
-            table_dict[link] = {'link':link, 'name':title, 'table':[]}
+            table_dict[link] = {'link':link, 'name':title, 'tables':[]}
         if col_dict == {}:
             col_dict = {link: []}
         else:
@@ -107,6 +114,6 @@ def generate_table(_file :str, table_dict:dict, col_dict:dict, cfg_path:str) -> 
             _id = _id + 1
             for col in columns:
                 _sample_dict[col] = f"{row[col]}"
-            table_dict['table'].append(_sample_dict)
-
-    return table_dict,col_dict,comment
+            table_dict[link]['tables'].append(_sample_dict)
+    # print(comment_dict)
+    return table_dict,col_dict,comment_dict

@@ -86,8 +86,8 @@ def _plot_heatmap(distances:str) -> dict:
                             tooltip = [alt.Tooltip('Isolate:O'), alt.Tooltip('variable:O'), alt.Tooltip('value:Q')],
                             color=alt.Color('value:Q').scale( scheme = "lightorange", reverse= True),
                         ).properties(
-                                width=10*number_of_isolates,
-                                height=10*number_of_isolates
+                                width=25*number_of_isolates,
+                                height=25*number_of_isolates
                             )
         chart = chart.to_json()
         return chart

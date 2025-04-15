@@ -7,7 +7,7 @@ name = "datasmryzr"
 dynamic = ["version"]
 description = ''
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.11"
 license = "MIT"
 keywords = []
 authors = [
@@ -31,12 +31,17 @@ dependencies = [
               "altair",
               "mycolorpy",
               "numpy",
+              "biopython"
               ]
 
 [project.urls]
 Documentation = "https://github.com/kristyhoran/datasmryzr#readme"
 Issues = "https://github.com/kristyhoran/datasmryzr/issues"
 Source = "https://github.com/kristyhoran/datasmryzr"
+
+
+[project.scripts]
+datasmryzr = "datasmryzr.datasmryzr:smryzr"
 
 
 [tool.hatch.version]
@@ -58,7 +63,7 @@ omit = [
 ]
 
 [tool.coverage.paths]
-datasmryzr = ["src/datasmryzr", "*/datasmryzr/src/datasmryzr"]
+datasmryzr = ["src/datasmryzr", "*/datasmryzr/src/datasmryzr","src/datasmryzr/templates/*"]
 tests = ["tests", "*/datasmryzr/tests"]
 
 [tool.coverage.report]
