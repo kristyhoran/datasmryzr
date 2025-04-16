@@ -20,7 +20,7 @@ pip3 install git+https://github.com/kristyhoran/datasmryzr
 
 ### Inputs
 
-Any combination of tables, newick or vcf can be supplied for generation of the html report. However, there are some things to be aware of in order to get the desired result.
+Any combination of tables, newick or vcf can be supplied for generation of the html report. However, there are some things to be aware of in order to get a good result.
 
 * Tabular data (comma or tab-delimited files) can be used as input. 
     * All columns in input tables will be rendered - in the order that they are supplied.
@@ -37,6 +37,16 @@ Any combination of tables, newick or vcf can be supplied for generation of the h
 
 * If you would like to visualise the distribution of variants across the reference genome, you will need to also supply the vcf, with all samples in it (for example the core.vcf output from snippy), a reference genome and a mask file if one has been used.
 
-### tree annotation
+## Cookbook
 
-A common use case for collation and display of genomic data is annotation of a tree. 
+### Simple tables
+
+You can generate a html with just tabular data. Any tablular data can be used, csv or tab-delimted files (support for .xlsx coming soon).
+
+``` bash
+datasmryzr --title 'A new report' --filename filename1.txt --filename filename2.csv --filename filename3.tsv
+```
+
+### Trees
+
+Commonly pathogen genomics analyses involve the generation of a tree of some sort, which can be challenging to visualise and contextualise with other types of data. In order to generate a report with a tree and annotation, you will need a newick file and file with the data you wish to display on the tree.
