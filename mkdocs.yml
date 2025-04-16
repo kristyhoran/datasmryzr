@@ -2,10 +2,12 @@ site_name: datasmryzr
 site_url: https://kristyhoran.github.io/datasmryzr/
 theme:
   name: material
-    palette:
+  palette:
       primary: blue grey
-    icon:
+  icon:
       repo: fontawesome/brands/github-alt
+  logo: assets/datasmryzrlogo.png
+
 features:
     - navigation.sections
     - navigation.tabs
