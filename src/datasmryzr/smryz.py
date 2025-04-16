@@ -154,13 +154,7 @@ def _get_target(outpath:str, title:str) -> str:
     """
 
     if pathlib.Path(outpath).exists():
-        name = f"{title.replace(
-            ' ', '_'
-            ).replace(
-                ':', '_'
-                ).replace(
-                    '/', '_'
-                    ).lower()}.html"
+        name = f"{title.replace(' ', '_').replace(':', '_').replace('/', '_').lower()}.html"
         return pathlib.Path(outpath) / name
     raise FileNotFoundError(f"Output path {outpath} does not exist.")
 
