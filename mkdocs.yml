@@ -6,8 +6,7 @@ theme:
       primary: blue grey
   icon:
       repo: fontawesome/brands/github-alt
-  logo: assets/datasmryzrlogo.png
-
+  
 features:
     - navigation.sections
     - navigation.tabs
