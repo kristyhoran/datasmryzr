@@ -1,4 +1,5 @@
 site_name: datasmryzr
 site_url: https://kristyhoran.github.io/datasmryzr/
 theme:
-  name: material
+  palette:
+    primary: blue grey

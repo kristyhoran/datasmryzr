@@ -3,18 +3,14 @@
 ![Python package](https://github.com/kristyhoran/datasmryzr/actions/workflows/python-package.yml/badge.svg)
 
 
-Datasmryzr is a small tool that is designed to collate and render pathogen genomics analysis results, such as trees, tables and matrices as a `.html` for sharing and interrogation. 
+Datasmryzr is a small command-line tool that is designed to collate and render pathogen genomics analysis results, such as trees, tables and matrices as a `.html` for sharing and interactive interrogation. 
 
-## Commands
+## Installation
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+`datasmryzr` is a python package with simply dependencies. It is recommended to use a virtual or conda environment for installation.
 
-## Project layout
+```
+<activate enviornment>
+pip3 install git+https://github.com/kristyhoran/datasmryzr
+```
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
