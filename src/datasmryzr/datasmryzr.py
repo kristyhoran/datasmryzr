@@ -20,7 +20,7 @@ from datasmryzr.smryz import smryz
 @click.option('--reference', '-r', help="Specify the path to the reference file that can be used to generate a distribution of variants across a genome. Required if --core-genome is used.", type = str,default = "", show_default = True)
 @click.option('--mask', '-m', help="Specify the path to the mask file that can be used to generate a distribution of variants across a genome. Required if --core-genome is used.", type = str,default = "", show_default = True)
 @click.option('--template', '-tmpl', help="Specify the path to the template file", type = str, default = f"{pathlib.Path(__file__).parent}/templates/report.html.j2", show_default = True)
-@click.option('--background_color', '-bg', help="Specify the background color of the report", type = str, default = "#3973ac", show_default = True)
+@click.option('--background_color', '-bg', help="Specify the background color of the report", type = str, default = "#546d78", show_default = True)
 @click.option('--font_color', '-fc', help="Specify the font color of the report", type = str, default = "#ffffff", show_default = True)
 @click.option('--config', '-c', help="Path to the config file", type = str, default = f"{pathlib.Path(__file__).parent / 'templates' / 'base_config.json'}", show_default = True)
 @click.option('--version', '-v', is_flag=True, help="Show the version of datasmryzr.")
