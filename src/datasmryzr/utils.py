@@ -12,3 +12,5 @@ def check_file_exists(file_path: str) -> bool:
         bool: True if the file exists, False otherwise.
     """
     return pathlib.Path(file_path).exists()
+
+

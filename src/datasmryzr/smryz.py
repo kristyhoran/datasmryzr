@@ -1,3 +1,9 @@
+"""
+This module provides functions for generating summary reports based on genomic data.
+It includes functions for processing input files, generating visualizations, and rendering
+a summary report using a Jinja2 template.
+"""
+
 from datasmryzr.annotate import construct_annotations
 from datasmryzr.utils import check_file_exists
 from datasmryzr.tables import generate_table
@@ -6,21 +12,21 @@ from datasmryzr.distances import _plot_histogram, _plot_heatmap
 from datasmryzr.tree import _get_tree_string
 
 import pandas as pd
-import pathlib, json, jinja2, datetime
+import pathlib
+import jinja2
+import datetime
 
-
-# reporthtml = pathlib.Path(f'report_{args.pipeline}.html')
-#     # # path to html template
-#     indexhtml = pathlib.Path(args.template_dir,'index.html') 
 
 def get_num_isos(filenames:list) -> int:
 
     """
-    Calculates the number of unique identifiers (isos) from a list of CSV files.
+    Calculates the number of unique identifiers (isos) from a list 
+    of CSV files.
 
-    This function reads a list of file paths, checks if each file exists, and 
-    processes the files to extract unique values from the first column of each 
-    non-empty CSV file. The total count of unique identifiers is returned.
+    This function reads a list of file paths, checks if each file 
+    exists, and processes the files to extract unique values from 
+    the first column of each non-empty CSV file. The total count 
+    of unique identifiers is returned.
 
     Args:
         filenames (list): A list of file paths to CSV files.
@@ -35,14 +41,15 @@ def get_num_isos(filenames:list) -> int:
         - The first column of each file is used to extract unique values.
     """
 
-    dfs = []
+    unique_isos = set()
     for filename in filenames:
         if check_file_exists(filename):
-            df = pd.read_csv(filename, sep = None, engine = 'python')
-            if df.shape[0] > 0:
-                dfs.extend(df[df.columns.tolist()[0]].unique().tolist())
-    dfs = list(set(dfs))
-    return len(dfs)
+            df = pd.read_csv(filename, sep=None, engine="python")
+            if not df.empty:
+                unique_isos.update(df.iloc[:, 0].unique())
+    return len(unique_isos)
+
+
 
 def make_density_plot(
     core_genome: str,
@@ -52,16 +59,21 @@ def make_density_plot(
 ):
     
     """
-    Generate a density plot for SNPs (Single Nucleotide Polymorphisms) based on the provided core genome VCF file 
-    and reference genome.
+    Generate a density plot for SNPs based on the provided core genome VCF 
+    file and reference genome.
     Args:
-        core_genome (str): Path to the core genome VCF file. Must not be an empty string.
-        reference (str): Path to the reference genome file. Must not be an empty string.
-        mask (str): Path to the mask file to exclude certain regions from the analysis.
-        background_color (str): Color to use for the background of the density plot.
+        core_genome (str): Path to the core genome VCF file. 
+        Must not be an empty string.
+        reference (str): Path to the reference genome file. 
+        Must not be an empty string.
+        mask (str): Path to the mask file to exclude certain 
+        regions from the analysis.
+        background_color (str): Color to use for the background 
+        of the density plot.
     Returns:
-        dict: A dictionary containing the SNP density plot data if both `core_genome` and `reference` are provided.
-              Returns an empty dictionary if either `core_genome` or `reference` is an empty string.
+        dict: A dictionary containing the SNP density plot data if 
+        both `core_genome` and `reference` are provided. Returns an empty 
+        dictionary if either `core_genome` or `reference` is an empty string.
     """
     if core_genome != "" and reference != "":
         return _plot_snpdensity(
@@ -105,7 +117,6 @@ def make_snp_distances(
     if distance_matrix != "":
         return _plot_histogram(
             distances = distance_matrix,
-
         )
     else:
         return {}
@@ -119,20 +130,21 @@ def _get_template(template:str) -> jinja2.Template:
         jinja2.Template: Jinja2 template object.
     """
     if check_file_exists(template):
-        with open(template, 'r') as f:
-            template = jinja2.Template(f.read())
-        return template
-    else:
-        raise FileNotFoundError(f"Template file {template} not found.")
+        with open(template, "r", encoding="utf-8") as file:
+            return jinja2.Template(file.read())
+    raise FileNotFoundError(f"Template file {template} not found.")
+
 
 def _get_target(outpath:str, title:str) -> str:
     
     """
-    Generate the target file path for an HTML file based on the given output path and title.
+    Generate the target file path for an HTML file based on the given 
+    output path and title.
 
     Args:
         outpath (str): The directory path where the file should be saved.
-        title (str): The title of the file, which will be used to generate the filename.
+        title (str): The title of the file, which will be used to generate
+        the filename.
 
     Returns:
         str: The full path to the target HTML file.
@@ -142,10 +154,16 @@ def _get_target(outpath:str, title:str) -> str:
     """
 
     if pathlib.Path(outpath).exists():
-        nme = f"{title.replace(' ', '_').replace(':', '_').replace('/', '_').lower()}.html"
-        return  pathlib.Path(outpath) / nme
-    else:
-        raise FileNotFoundError(f"Output path {outpath} does not exist.")
+        name = f"{title.replace(
+            ' ', '_'
+            ).replace(
+                ':', '_'
+                ).replace(
+                    '/', '_'
+                    ).lower()}.html"
+        return pathlib.Path(outpath) / name
+    raise FileNotFoundError(f"Output path {outpath} does not exist.")
+
 
 def smryz(
         output: str, 
@@ -165,7 +183,7 @@ def smryz(
         background_color: str, 
         font_color: str,
         config: str
-):
+) -> None:
     
     """
     Generates a summary report based on the provided data and configuration.
@@ -189,10 +207,6 @@ def smryz(
     config (str): Path to the configuration file.
     Returns:
     None
-    This function processes the input files, generates various visualizations and metadata, 
-    and renders a summary report using the specified template. The report includes details 
-    such as phylogenetic tree, SNP distances, SNP heatmap, SNP density plot, metadata, and 
-    other relevant information.
     """
 
     print(f"Generating summary report for {title}...")
@@ -210,9 +224,14 @@ def smryz(
         filenames.append(core_genome_report)
     for _file in filenames:
         print(f"Processing file {_file}...")
-        table_dict, col_dict, comments = generate_table(_file = _file, table_dict= table_dict, col_dict=col_dict,comment_dict=comments, cfg_path = config)
+        table_dict, col_dict, comments = generate_table(
+            _file = _file, 
+            table_dict= table_dict, 
+            col_dict=col_dict,
+            comment_dict=comments, 
+            cfg_path = config)
         print(f"File {_file} processed.")
-    # print(comments)
+    
     metadata_dict = construct_annotations(
         path = annotate,
         cols = annotate_cols,
@@ -251,10 +270,9 @@ def smryz(
        
     }
     
-    # load the template
     print(f"Loading template {template}...")
     template = _get_template(template)
     target = _get_target(output, title)
-    # render the template with the data
-    print(f"Rendering template...")
+
+    print("Rendering template...")
     target.write_text(template.render(data))

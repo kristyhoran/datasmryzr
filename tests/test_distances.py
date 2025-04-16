@@ -11,10 +11,10 @@ def sample_distances_file(tmp_path):
     distances_file = tmp_path / "distances.tsv"
     with open(distances_file, "w") as f:
         f.write(
-            "Isolate\tIsolate1\tIsolate2\tIsolate3\n"
-            "Isolate1\t0\t5\t10\n"
-            "Isolate2\t5\t0\t15\n"
-            "Isolate3\t10\t15\t0\n"
+            "Seqname\tIsolateA\tIsolateB\tIsolateC\n"
+            "IsolateA\t0\t5\t10\n"
+            "IsolateB\t5\t0\t15\n"
+            "IsolateC\t10\t15\t0\n"
         )
     return str(distances_file)
 
@@ -23,9 +23,9 @@ def test_get_distances(sample_distances_file):
     df = _get_distances(sample_distances_file)
     assert isinstance(df, pd.DataFrame)
     assert len(df) == 6  # 3 isolates, excluding diagonal
-    assert "Isolate" in df.columns
-    assert "variable" in df.columns
-    assert "value" in df.columns
+    assert "Isolate1" in df.columns
+    assert "Isolate2" in df.columns
+    assert "Distance" in df.columns
 
 def test_get_distances_file_not_found():
     """Test _get_distances with a non-existent file."""
