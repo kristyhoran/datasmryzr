@@ -27,21 +27,33 @@ def _check_vals(df:pd.DataFrame, cols:list) -> list:
     Returns:
         bool: True if the values are valid, False otherwise.
     """
+    
     final_cols = []
     _id_col = df.columns[0]
+    indf = False
     for col in cols:
-        if col not in df.columns:
-            raise ValueError(f"Column {col} not found in dataframe.")
-        is_string = True
-        # print(col)
-        if col != _id_col:
-            for val in df[col].unique():
-                if isinstance(val, (int, float)):
-                    is_string = False
-            if is_string or col in CFG:
-                final_cols.append(col)
-        
-    return final_cols
+        if col in df.columns:
+            indf = True
+            # raise ValueError(f"Column {col} not found in dataframe.")
+            is_string = True
+            # print(col)
+            if col != _id_col:
+                for val in df[col].unique():
+                    
+                    try:
+                        int(val)
+                        is_string = False
+                    except:
+                        is_string = True
+                    
+                if is_string or col in CFG:
+                    final_cols.append(col)
+    if len(final_cols) == 0 and indf:
+        raise ValueError(f"Columns {', '.join( cols )} do not contain any valid values. Please check the column names.")    
+    elif len(final_cols) == 0 and not indf:
+        raise ValueError(f"None of the columns {', '.join( cols )} are in the dataframe or in the correct format - only non numerical data can be included. Please check the column names.")
+    else:
+        return final_cols
 
 def _get_cols(cols:list, df:pd.DataFrame) -> list:
     """
@@ -57,8 +69,9 @@ def _get_cols(cols:list, df:pd.DataFrame) -> list:
         return column_list
     else:
         column_list = _check_vals(df = df, cols = cols)
-        if len(column_list) == 0:
-            raise ValueError(f"None of the columns {', '.join( cols )} are in the dataframe or in the correct format - only non numerical data can be included. Please check the column names.")
+        
+        # if len(column_list) == 0:
+        #     raise ValueError(f"None of the columns {', '.join( cols )} are in the dataframe or in the correct format - only non numerical data can be included. Please check the column names.")
         return column_list
 
 
@@ -130,7 +143,7 @@ def _make_legend(df:pd.DataFrame, cols:list, color_css:dict) -> dict:
             lg = {
                 val:color
             }
-        legend[col].append(lg)
+            legend[col].append(lg)
     return legend
 
 def _get_metadata_tree(df:pd.DataFrame, cols:list, legend: dict, color_css:dict) -> dict:

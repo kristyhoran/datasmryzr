@@ -66,8 +66,7 @@ def _check_numeric(col:str, data:list) -> bool:
             n = False
         
         number.add(n)
-    
-    if len(number) == 1:
+    if len(number) == 1 and True in number:
         return "number"
     else:
         return "input"
@@ -148,5 +147,7 @@ def generate_table(_file :str, table_dict:dict, col_dict:dict,comment_dict:dict,
             for col in columns:
                 _sample_dict[col] = f"{row[col]}"
             table_dict[link]['tables'].append(_sample_dict)
-    # print(comment_dict)
+    print(comment_dict)
+    print(col_dict)
+    print(table_dict)
     return table_dict,col_dict,comment_dict

@@ -23,10 +23,11 @@ def _get_distances(distances:str) -> pd.DataFrame:
     Returns:
         pd.DataFrame: DataFrame containing the pairwise distances.
     """
+    print(f"Getting distances from {distances}")
     if check_file_exists(distances):
         distance = f"{pathlib.Path(distances)}"
         try:
-            df = pd.read_csv(distance, sep = '\t')
+            df = pd.read_csv(distance, sep = None, engine='python')
             # get a list of isolate names
             names = list(df.columns[1:len(df.columns)])
             col1 = df.columns[0]
@@ -42,8 +43,8 @@ def _get_distances(distances:str) -> pd.DataFrame:
             raise SystemError
         
     else:
-        print(f"Distance file {distance} does not exist.")
-        raise SystemError
+        print(f"Distance file {distances} does not exist.")
+        raise FileNotFoundError(f"Distance file {distances} does not exist.")
     
 
 def _plot_histogram(distances:str,bar_color:str = '#216cb8') -> dict:
