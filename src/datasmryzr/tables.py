@@ -43,6 +43,18 @@ def _get_delimiter(file:str) -> str:
         
 
 def _check_numeric(col:str, data:list) -> bool:
+    
+    """
+    Determines if all values in a specified column of a dataset can be converted to numeric.
+    Args:
+        col (str): The name of the column to check.
+        data (list): A list of dictionaries representing the dataset, where each dictionary 
+                        corresponds to a row and contains column-value pairs.
+    Returns:
+        bool: Returns "number" if all values in the specified column can be converted to numeric,
+                otherwise returns "input".
+    """
+
     number = set()
     
     for row in data:
@@ -61,6 +73,28 @@ def _check_numeric(col:str, data:list) -> bool:
         return "input"
         
 def generate_table(_file :str, table_dict:dict, col_dict:dict,comment_dict:dict, cfg_path:str) -> dict:
+    
+    """
+    Generates a table representation from a given file and updates the provided dictionaries with table, column, 
+    and comment information.
+    Args:
+        _file (str): The path to the input file containing data to be processed.
+        table_dict (dict): A dictionary to store table metadata and data. If empty, it will be initialized.
+        col_dict (dict): A dictionary to store column metadata for the table. If empty, it will be initialized.
+        comment_dict (dict): A dictionary to store comments associated with the table. If empty, it will be initialized.
+        cfg_path (str): The path to the configuration file containing metadata such as comments and data types.
+    Returns:
+        tuple: A tuple containing the updated `table_dict`, `col_dict`, and `comment_dict`.
+    Notes:
+        - The function reads the input file, extracts its data, and generates metadata for tables and columns.
+        - It uses the configuration file to determine data types and comments for the table.
+        - If the input dictionaries are empty, they will be initialized and populated with the generated data.
+        - The function assumes the input file is in CSV format and uses the appropriate delimiter.
+    Raises:
+        FileNotFoundError: If the input file does not exist.
+        KeyError: If required keys are missing in the configuration file.
+    """
+
     cfg = _get_config(cfg_path)
     dlm = _get_delimiter(_file)
     if check_file_exists(_file):
@@ -69,7 +103,6 @@ def generate_table(_file :str, table_dict:dict, col_dict:dict,comment_dict:dict,
             data = [row for row in reader]
             columns = list(reader.fieldnames)
         title = _file.split('/')[-1].split('.')[0].replace('_', ' ').replace('-', ' ')
-        print(title)
         link = title.replace(' ', '-').replace('_', '-').lower()
         if link in cfg['comments']:
             comment=  cfg['comments'][link]

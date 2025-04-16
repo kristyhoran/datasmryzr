@@ -15,6 +15,26 @@ import pathlib, json, jinja2, datetime
 
 def get_num_isos(filenames:list) -> int:
 
+    """
+    Calculates the number of unique identifiers (isos) from a list of CSV files.
+
+    This function reads a list of file paths, checks if each file exists, and 
+    processes the files to extract unique values from the first column of each 
+    non-empty CSV file. The total count of unique identifiers is returned.
+
+    Args:
+        filenames (list): A list of file paths to CSV files.
+
+    Returns:
+        int: The count of unique identifiers found across all valid files.
+
+    Notes:
+        - The function uses `pd.read_csv` with `sep=None` and `engine='python'` 
+            to infer the delimiter automatically.
+        - Only files that exist and contain at least one row are processed.
+        - The first column of each file is used to extract unique values.
+    """
+
     dfs = []
     for filename in filenames:
         if check_file_exists(filename):
@@ -25,19 +45,23 @@ def get_num_isos(filenames:list) -> int:
     return len(dfs)
 
 def make_density_plot(
-    core_genome:str,
-    reference:str,
-    mask:str,
-    background_color:str ,
+    core_genome: str,
+    reference: str,
+    mask: str,
+    background_color: str
 ):
+    
     """
-    Function to make a density plot.
+    Generate a density plot for SNPs (Single Nucleotide Polymorphisms) based on the provided core genome VCF file 
+    and reference genome.
     Args:
-        core_genome (str): Path to the core genome file.
-        reference (str): Path to the reference genome file.
-        mask (str): Path to the mask file.
+        core_genome (str): Path to the core genome VCF file. Must not be an empty string.
+        reference (str): Path to the reference genome file. Must not be an empty string.
+        mask (str): Path to the mask file to exclude certain regions from the analysis.
+        background_color (str): Color to use for the background of the density plot.
     Returns:
-        dict: Dictionary containing the density plot data.
+        dict: A dictionary containing the SNP density plot data if both `core_genome` and `reference` are provided.
+              Returns an empty dictionary if either `core_genome` or `reference` is an empty string.
     """
     if core_genome != "" and reference != "":
         return _plot_snpdensity(
@@ -102,6 +126,20 @@ def _get_template(template:str) -> jinja2.Template:
         raise FileNotFoundError(f"Template file {template} not found.")
 
 def _get_target(outpath:str, title:str) -> str:
+    
+    """
+    Generate the target file path for an HTML file based on the given output path and title.
+
+    Args:
+        outpath (str): The directory path where the file should be saved.
+        title (str): The title of the file, which will be used to generate the filename.
+
+    Returns:
+        str: The full path to the target HTML file.
+
+    Raises:
+        FileNotFoundError: If the specified output path does not exist.
+    """
 
     if pathlib.Path(outpath).exists():
         nme = f"{title.replace(' ', '_').replace(':', '_').replace('/', '_').lower()}.html"
@@ -110,25 +148,53 @@ def _get_target(outpath:str, title:str) -> str:
         raise FileNotFoundError(f"Output path {outpath} does not exist.")
 
 def smryz(
-        output:str, 
-        title:str, 
-        description:str, 
-        author:str, 
-        filename:list, 
-        tree:str, 
-        annotate:str, 
-        annotate_cols:str, 
-        distance_matrix:str, 
-        core_genome:str, 
-        core_genome_report:str,
-        reference:str, 
-        mask:str, 
-        template:str, 
-        background_color:str, 
-        font_color:str,
-        config:str,
+        output: str, 
+        title: str, 
+        description: str, 
+        author: str, 
+        filename: list, 
+        tree: str, 
+        annotate: str, 
+        annotate_cols: str, 
+        distance_matrix: str, 
+        core_genome: str, 
+        core_genome_report: str,
+        reference: str, 
+        mask: str, 
+        template: str, 
+        background_color: str, 
+        font_color: str,
+        config: str
 ):
     
+    """
+    Generates a summary report based on the provided data and configuration.
+    Args:
+    output (str): Path to save the generated summary report.
+    title (str): Title of the summary report.
+    description (str): Description of the summary report.
+    author (str): Author of the report.
+    filename (list): List of input file paths to process.
+    tree (str): Path to the phylogenetic tree file in Newick format.
+    annotate (str): Path to the annotation file.
+    annotate_cols (str): Columns to use from the annotation file.
+    distance_matrix (str): Path to the SNP distance matrix file.
+    core_genome (str): Path to the core genome file.
+    core_genome_report (str): Path to the core genome report file.
+    reference (str): Path to the reference genome file.
+    mask (str): Path to the mask file.
+    template (str): Path to the template file for rendering the report.
+    background_color (str): Background color for the report.
+    font_color (str): Font color for the report.
+    config (str): Path to the configuration file.
+    Returns:
+    None
+    This function processes the input files, generates various visualizations and metadata, 
+    and renders a summary report using the specified template. The report includes details 
+    such as phylogenetic tree, SNP distances, SNP heatmap, SNP density plot, metadata, and 
+    other relevant information.
+    """
+
     print(f"Generating summary report for {title}...")
     print(f"Output will be saved to {output}")
     print(f"Using template {template}")
@@ -184,10 +250,11 @@ def smryz(
        
        
     }
-    # print(data["legend"])
+    
     # load the template
     print(f"Loading template {template}...")
     template = _get_template(template)
     target = _get_target(output, title)
     # render the template with the data
+    print(f"Rendering template...")
     target.write_text(template.render(data))
