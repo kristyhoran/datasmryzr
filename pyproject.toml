@@ -50,6 +50,13 @@ path = "src/datasmryzr/__about__.py"
 [tool.hatch.envs.types]
 extra-dependencies = [
   "mypy>=1.0.0",
+  "click",
+  "pandas",
+  "jinja2",
+  "altair",
+  "mycolorpy",
+  "numpy",
+  "biopython"
 ]
 [tool.hatch.envs.types.scripts]
 check = "mypy --install-types --non-interactive {args:src/datasmryzr tests}"
