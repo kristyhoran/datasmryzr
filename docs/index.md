@@ -49,4 +49,25 @@ datasmryzr --title 'A new report' --filename filename1.txt --filename filename2.
 
 ### Trees
 
-Commonly pathogen genomics analyses involve the generation of a tree of some sort, which can be challenging to visualise and contextualise with other types of data. In order to generate a report with a tree and annotation, you will need a newick file and file with the data you wish to display on the tree.
+Commonly pathogen genomics analyses involve the generation of a tree of some sort, which can be challenging to visualise and contextualise with other types of data. In order to generate a report with a tree and annotation, you will need a newick file and file with the data you wish to display on the tree. 
+
+**Pro-tips**
+
+* The first column of the annotation file must contain the tiplabels of the tree you wish to annotate. If a tiplabel is not present in the file, no annotation will be assigned to those tips.
+* Only categorical values will be annotated on the tree. If you have numeric values that should be annotated as categorical on your tree you can supply a configuration file 
+
+```json
+{
+    "comments":{
+    "some_file_stub": "some comment"},
+    "datatype": {
+        "MLST":"input",
+        "ST":"input"
+    },
+    "categorical_columns": [
+        "MLST",
+        "ST"
+    ]
+
+}
+```

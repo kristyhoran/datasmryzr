@@ -1,29 +1,31 @@
 site_name: datasmryzr
 site_url: https://kristyhoran.github.io/datasmryzr/
+
 theme:
   name: material
-#   palette:
-#       primary: blue grey
-#   icon:
-#       repo: fontawesome/brands/github-alt
+  palette:
+      primary: blue grey
+  icon:
+      repo: fontawesome/brands/github-alt
   
-# features:
-#     - navigation.instant
-#     - navigation.sections
-#     - navigation.tabs
-#     - content.code.copy
-#     - content.code.select
+features:
+    - content.code.copy
+    - content.code.select
 
-# repo_url: https://github.com/kristyhoran/datasmryzr
-# repo_name: kristyhoran/datasmryzr
-# extra:
-#   social:
-#     - icon: fontawesome/brands/github 
-#       link: https://github.com/kristyhoran/datasmryzr
+repo_url: https://github.com/kristyhoran/datasmryzr
+repo_name: kristyhoran/datasmryzr
+extra:
+  social:
+    - icon: fontawesome/brands/github 
+      link: https://github.com/kristyhoran/datasmryzr
 
-# markdown_extensions:
-#   - attr_list
-#   - pymdownx.emoji:
-#       emoji_index: !!python/name:material.extensions.emoji.twemoji
-#       emoji_generator: !!python/name:material.extensions.emoji.to_svg
-
+markdown_extensions:
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
