@@ -3,7 +3,6 @@ import os
 import json
 import csv
 from src.datasmryzr.tables import (
-    _get_config,
     _get_delimiter,
     _check_numeric,
     generate_table,
@@ -38,18 +37,6 @@ def sample_data_file(tmp_path):
         writer.writerow([2, "B"])
         writer.writerow([3, "C"])
     return str(data_file)
-
-def test_get_config(sample_config_file):
-    """Test _get_config function."""
-    config = _get_config(sample_config_file)
-    assert isinstance(config, dict)
-    assert "datatype" in config
-    assert "comments" in config
-
-def test_get_config_file_not_found():
-    """Test _get_config with a non-existent file."""
-    with pytest.raises(FileNotFoundError, match="Configuration file .* not found."):
-        _get_config("non_existent_config.json")
 
 def test_get_delimiter(sample_data_file):
     """Test _get_delimiter function."""

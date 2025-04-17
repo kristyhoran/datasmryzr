@@ -5,26 +5,9 @@ checking numeric columns, and generating dictionaries with metadata.
 
 import json
 import csv
-from datasmryzr.utils import check_file_exists
+from datasmryzr.utils import check_file_exists, get_config
 
 
-
-def _get_config(path:str) -> dict:
-    """
-    Load the configuration file.
-    Args:
-        path (str): Path to the configuration file.
-    Returns:
-        dict: Configuration dictionary.
-    Raises:
-        FileNotFoundError: If the configuration file does not exist.
-    """
-    if not check_file_exists(path):
-        raise FileNotFoundError(f"Configuration file {path} not found.")
-    with open(path, 'r') as f:
-        cfg = json.load(f)
-    
-    return cfg
 
 def _get_delimiter(file:str) -> str:
     """
@@ -97,7 +80,7 @@ def generate_table(_file :str,
         KeyError: If required keys are missing in the configuration file.
     """
 
-    cfg = _get_config(cfg_path)
+    cfg = get_config(cfg_path)
     dlm = _get_delimiter(_file)
     if not check_file_exists(_file):
         raise FileNotFoundError(f"Input file {_file} does not exist.")
