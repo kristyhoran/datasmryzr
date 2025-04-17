@@ -3,10 +3,11 @@ This module provides functions for generating metadata annotations
 and legends for a DataFrame, mapping metadata variables to colors.
 """
 import pandas as pd
+import json
 from mycolorpy import colorlist as mcp
 from datasmryzr import utils
 
-_cfg= ["ST","MSLT"]
+
 
 def _open_file(file_path:str) -> pd.DataFrame:
     """
@@ -21,15 +22,25 @@ def _open_file(file_path:str) -> pd.DataFrame:
     
 
 def _check_vals(df:pd.DataFrame, 
-                cols:list) -> list:
+                cols:list,
+                cfg:dict) -> list:
     """
-    Check if the values in the dataframe are valid.
+    Validates and filters the specified columns from a DataFrame based on 
+    their data type and configuration settings.
     Args:
-        df (pd.DataFrame): Dataframe to check.
-        cols (list): List of columns to check.
+        df (pd.DataFrame): The input DataFrame to check.
+        cols (list): A list of column names to validate.
+        cfg (dict): A configuration dictionary containing the key 
+            'categorical_columns', which specifies columns to treat as 
+            categorical.
     Returns:
-        bool: True if the values are valid, False otherwise.
+        list: A list of valid column names that are either non-numerical or 
+        explicitly specified as categorical in the configuration.
+    Raises:
+        ValueError: If none of the specified columns are valid or if none of 
+        the columns exist in the DataFrame.
     """
+                
     final_cols = []
     _id_col = df.columns[0]
     indf = False
@@ -46,7 +57,7 @@ def _check_vals(df:pd.DataFrame,
                     except ValueError:
                         is_string = True
                     
-                if is_string or col in _cfg:
+                if is_string or col in cfg['categorical_columns']:
                     final_cols.append(col)
     if not final_cols:
         if indf:
@@ -62,19 +73,28 @@ def _check_vals(df:pd.DataFrame,
     else:
         return final_cols
 
-def _get_cols(cols:list, 
-              df:pd.DataFrame) -> list:
+
+def _get_cols(cols: list, df: pd.DataFrame, cfg: dict) -> list:
     """
-    Get the columns from the dataframe.
+    Retrieve and validate a list of columns from a DataFrame based on the 
+    provided configuration.
     Args:
-        cols (list): List of columns to get.
-        df (pd.DataFrame): Dataframe to get the columns from.
+        cols (list): A list of column names to retrieve or the string "all" 
+        to select all columns.
+        df (pd.DataFrame): The DataFrame from which columns will be retrieved.
+        cfg (dict): A configuration dictionary used for validation.
     Returns:
-        list: a list of appropriate columns.
+        list: A list of validated column names.
+    Notes:
+        - If `cols` is "all", all columns in the DataFrame will be selected 
+        and validated.
+        - The `_check_vals` function is used to validate the selected columns 
+        against the configuration.
     """
+              
     if cols == "all":
-        return _check_vals(df=df, cols=df.columns.tolist())
-    return _check_vals(df=df, cols=cols)
+        return _check_vals(df=df, cols=df.columns.tolist(), cfg=cfg)
+    return _check_vals(df=df, cols=cols, cfg=cfg)
 
 
 def _get_colors(df:pd.DataFrame, 
@@ -208,7 +228,8 @@ def _get_metadata_tree(df:pd.DataFrame,
     
 
 def construct_annotations(path: str, 
-                          cols: list) -> dict:
+                          cols: list,
+                          config:str) -> dict:
     """
     Constructs annotations based on the provided file path and columns.
     This function processes a file to generate metadata annotations, including
@@ -234,7 +255,8 @@ def construct_annotations(path: str,
         }
 
     df = _open_file(path).fillna("NA")
-    metadata_columns = _get_cols(cols=cols, df=df)
+    cfg = utils.get_config(config)
+    metadata_columns = _get_cols(cols=cols, df=df, cfg=cfg)
     colors_css = _get_colors(df=df, cols=metadata_columns)
     legend = _make_legend(df=df, cols=metadata_columns, color_css=colors_css)
     metadata_tree = _get_metadata_tree(

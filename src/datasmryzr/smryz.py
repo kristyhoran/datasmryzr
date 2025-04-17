@@ -229,6 +229,7 @@ def smryz(
     metadata_dict = construct_annotations(
         path = annotate,
         cols = annotate_cols,
+        config=config
     )
     data = {
         "title": title,

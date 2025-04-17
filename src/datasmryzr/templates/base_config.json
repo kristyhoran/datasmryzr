@@ -4,6 +4,10 @@
     "datatype": {
         "MLST":"input",
         "ST":"input"
-    }
+    },
+    "categorical_columns": [
+        "MLST",
+        "ST"
+    ]
 
 }
