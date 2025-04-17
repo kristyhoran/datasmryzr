@@ -43,6 +43,8 @@ Any combination of tables, newick or vcf can be supplied for generation of the h
 
 You can generate a html with just tabular data. Any tablular data can be used, csv or tab-delimted files (support for .xlsx coming soon).
 
+**Example command**
+
 ``` bash
 datasmryzr --title 'A new report' --filename filename1.txt --filename filename2.csv --filename filename3.tsv
 ```
@@ -70,4 +72,12 @@ Commonly pathogen genomics analyses involve the generation of a tree of some sor
     ]
 
 }
+```
+
+* Colours will be randomly assigned - we do not yet support custom colour schemes.
+
+**Example command**
+
+```bash
+datasmryzr --tree tree.newick --annotate annotation_file.csv --annotate_cols cat1,cat4,cat5
 ```
