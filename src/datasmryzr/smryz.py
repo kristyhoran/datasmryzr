@@ -103,7 +103,8 @@ def make_snp_heatmap(
     else:
         return {}
 def make_snp_distances(
-    distance_matrix:str
+    distance_matrix:str,
+    bar_color:str = "lightblue",
 ):
     """
     Function to make SNP distances.
@@ -117,6 +118,7 @@ def make_snp_distances(
     if distance_matrix != "":
         return _plot_histogram(
             distances = distance_matrix,
+            bar_color=bar_color
         )
     else:
         return {}
@@ -245,7 +247,8 @@ def smryz(
         "comment": comments,
         "newick": tree_string,
         "snp_distances": make_snp_distances(
-        distance_matrix = distance_matrix
+        distance_matrix = distance_matrix,
+        bar_color = background_color
     ) ,
         "snp_heatmap": make_snp_heatmap(
         distance_matrix = distance_matrix
