@@ -8,6 +8,7 @@
     "categorical_columns": [
         "MLST",
         "ST"
-    ]
+    ],
+    "id_column": "Isolate"
 
 }

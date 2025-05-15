@@ -5,6 +5,7 @@ checking numeric columns, and generating dictionaries with metadata.
 
 import json
 import csv
+import ast
 from datasmryzr.utils import check_file_exists, get_config
 
 
@@ -19,6 +20,8 @@ def _get_delimiter(file:str) -> str:
     Raises:
         ValueError: If the delimiter cannot be determined.
     """
+    if "json" in file:
+        return None
     with open(file, "r", encoding="utf-8") as f:
         line = f.read()
         if "\t" in line:
@@ -27,9 +30,71 @@ def _get_delimiter(file:str) -> str:
             return ","
         raise ValueError(f"Unknown delimiter in file: {file}")
 
+def _get_json_data(_file:str,
+                   id_col:None) -> dict:
+    """
+    Function to read a JSON file and return its content as a dictionary.
+    Args:
+        file (str): Path to the file.
+    Returns:
+        dict: Dictionary representing the content of the JSON file.
+    """
+    with open(_file, 'r') as f:
+        json_str = f.read()
+        data = ast.literal_eval(json_str)
+        # tmp_data = data[0]
+        # print(data)
+        columns = set()
+        for row in data:
+            if "_children" in row:
+                # print("Children found")
+                for child in row["_children"]:
+                    for key in child.keys():
+                        if key != "_children":
+                            columns.add(key)
+            
+        # else:
+        if id_col:
+            columns = sorted(columns,key=lambda x: [id_col].index(x) if x in [id_col] else 10e99)
+    ``
+        #     raise ValueError(f"Invalid JSON format in file: {_file}")
+    return data,columns
+
+
+def _get_tabular_data(_file:str, dlm:str) -> list:
+    """
+    Function to read a tabular file and return its content as a list of dictionaries.
+    Args:
+        file (str): Path to the file.
+        dlm (str): Delimiter used in the file.
+    Returns:
+        list: List of dictionaries representing the rows in the file.
+    """
+    with open(_file, 'r') as f:
+        reader = csv.DictReader(f, delimiter = dlm)
+        data = [row for row in reader]
+        columns = list(reader.fieldnames)
+    return data,columns
+
+def _decide_type(val:str,
+                 is_numeric:set) -> str:
+    """
+    Function to determine the type of a value.
+    Args:
+        val (str): The value to be checked.
+    Returns:
+        str: The type of the value ("number" or "input").
+    """
+    try:
+        float(val)
+        is_numeric.add(True)
+    except ValueError:
+        is_numeric.add(False)
+    return is_numeric
 
 def _check_numeric(col:str, 
-                   data:list) -> bool:
+                   data:list,
+                   is_json:bool = False) -> bool:
     
     """
     Determines if all values in a specified column of a dataset can be
@@ -43,14 +108,18 @@ def _check_numeric(col:str,
         bool: Returns "number" if all values in the specified column can 
         be converted to numeric, otherwise returns "input".
     """
-
+    
     is_numeric = set()
     for row in data:
-        try:
-            float(row[col])
-            is_numeric.add(True)
-        except ValueError:
-            is_numeric.add(False)
+        if not is_json:
+            val = row[col] 
+            is_numeric = _decide_type(val, is_numeric)
+        else:
+            for sub in row["_children"]:
+                # print(sub[col])
+                val = sub[col]
+                is_numeric = _decide_type(val, is_numeric)
+                    
     return "number" if len(is_numeric)==1 and True in is_numeric else "input"
 
         
@@ -79,16 +148,21 @@ def generate_table(_file :str,
         FileNotFoundError: If the input file does not exist.
         KeyError: If required keys are missing in the configuration file.
     """
-
+    is_json = False
     cfg = get_config(cfg_path)
+    # print(cfg)
     dlm = _get_delimiter(_file)
+    id_col = cfg["id_column"] if "id_column" in cfg else None
+    # print(f"ID col:{id_col}")
     if not check_file_exists(_file):
         raise FileNotFoundError(f"Input file {_file} does not exist.")
-
-    with open(_file, 'r') as f:
-        reader = csv.DictReader(f, delimiter = dlm)
-        data = [row for row in reader]
-        columns = list(reader.fieldnames)
+    
+    if dlm:
+        data, columns = _get_tabular_data(_file, dlm)
+    else:
+        data,columns = _get_json_data(_file, id_col=id_col)
+        is_json = True
+        
     title = _file.split('/')[-1].split('.')[0].replace('_', ' ').replace('-', ' ')
     link = title.replace(' ', '-').replace('_', '-').lower()
     comment = cfg["comments"].get(link, "")
@@ -101,26 +175,39 @@ def generate_table(_file :str,
     if link not in col_dict:
         col_dict[link] = []
     
-    _id =1
+    
     
     for col in columns:
-        _type = cfg["datatype"].get(col, _check_numeric(col=col, data=data))
-        d ={
-            'title':col,
-            'field':col,
-            'headerFilter':_type,
-            'headerFilterPlaceholder':f'Search {col}'
-        }
-        if _type == 'number':
-            d['headerFilterFunc'] = ">="
-            d['headerFilterPlaceholder'] = f'At least...'    
-        col_dict[link].append(d)
- 
+        if col != "_children":
+            _type = cfg["datatype"].get(col, _check_numeric(col=col, data=data, is_json=is_json))
+            d ={
+                'title':col,
+                'field':col,
+                'headerFilter':_type,
+                'headerFilterPlaceholder':f'Search {col}'
+            }
+            if _type == 'number':
+                d['headerFilterFunc'] = ">="
+                d['headerFilterPlaceholder'] = f'At least...'    
+            col_dict[link].append(d)
+    _id =1
     for row in data:
         _sample_dict = {"id":_id}
+        
+        if not is_json:
+            for col in columns:
+                _sample_dict[col] = f"{row[col]}"
+        else:
+            if id_col:
+                _sample_dict[id_col] = f"{row[id_col]}" if id_col in row else None
+            _sample_dict["_children"] = []
+            for sub in row["_children"]:
+                _id = _id + 1
+                _sub_sample_dict = {"id":_id}
+                for col in columns:
+                    _sub_sample_dict[col] = f"{sub[col]}"
+                _sample_dict["_children"].append(_sub_sample_dict)
         _id = _id + 1
-        for col in columns:
-            _sample_dict[col] = f"{row[col]}"
         table_dict[link]['tables'].append(_sample_dict)
 
     return table_dict,col_dict,comment_dict

@@ -493,6 +493,7 @@ $("a.detail-button").click(function(){
   //create Tabulator on DOM element with id "example-table"
   if(column_dict[section].length > 1){
     var table = new Tabulator("#current-table", {
+    dataTree:true,
     pagination:"local",
     paginationSize:25,
     paginationSizeSelector:true,
