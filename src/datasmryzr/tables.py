@@ -56,7 +56,7 @@ def _get_json_data(_file:str,
         # else:
         if id_col:
             columns = sorted(columns,key=lambda x: [id_col].index(x) if x in [id_col] else 10e99)
-    ``
+    
         #     raise ValueError(f"Invalid JSON format in file: {_file}")
     return data,columns
 
@@ -196,10 +196,12 @@ def generate_table(_file :str,
         
         if not is_json:
             for col in columns:
-                _sample_dict[col] = f"{row[col]}"
+                _sample_dict[col] = f"{row[col]}" 
         else:
             if id_col:
                 _sample_dict[id_col] = f"{row[id_col]}" if id_col in row else None
+            for col in columns:
+                _sample_dict[col] = f"{row[col]}" if col in row else ""
             _sample_dict["_children"] = []
             for sub in row["_children"]:
                 _id = _id + 1
