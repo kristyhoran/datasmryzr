@@ -75,6 +75,7 @@ def make_density_plot(
         both `core_genome` and `reference` are provided. Returns an empty 
         dictionary if either `core_genome` or `reference` is an empty string.
     """
+    print("Generating SNP density plot...")
     if core_genome != "" and reference != "":
         return _plot_snpdensity(
             vcf_file = core_genome,
@@ -159,6 +160,21 @@ def _get_target(outpath:str, title:str) -> str:
         name = f"{title.replace(' ', '_').replace(':', '_').replace('/', '_').lower()}.html"
         return pathlib.Path(outpath) / name
     raise FileNotFoundError(f"Output path {outpath} does not exist.")
+
+def _parse_genome_file_name(filename:str) -> str:
+    """
+    Parse the genome file name to extract the base name without extension.
+
+    Args:
+        filename (str): The path to the genome file.
+
+    Returns:
+        str: The base name of the genome file without extension.
+    """
+    if filename == "":
+        return ""
+    return pathlib.Path(filename).stem.replace("_","-").replace(" ","-").lower()
+
 
 
 def smryz(
@@ -246,6 +262,7 @@ def smryz(
         "columns": col_dict,
         "comment": comments,
         "newick": tree_string,
+        "core_genome": _parse_genome_file_name(core_genome_report),
         "snp_distances": make_snp_distances(
         distance_matrix = distance_matrix,
         bar_color = background_color

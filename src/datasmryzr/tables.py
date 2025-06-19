@@ -6,6 +6,7 @@ checking numeric columns, and generating dictionaries with metadata.
 import json
 import csv
 import ast
+import pathlib
 from datasmryzr.utils import check_file_exists, get_config
 
 
@@ -152,6 +153,7 @@ def generate_table(_file :str,
     cfg = get_config(cfg_path)
     # print(cfg)
     dlm = _get_delimiter(_file)
+    
     id_col = cfg["id_column"] if "id_column" in cfg else None
     # print(f"ID col:{id_col}")
     if not check_file_exists(_file):
@@ -163,8 +165,8 @@ def generate_table(_file :str,
         data,columns = _get_json_data(_file, id_col=id_col)
         is_json = True
         
-    title = _file.split('/')[-1].split('.')[0].replace('_', ' ').replace('-', ' ')
-    link = title.replace(' ', '-').replace('_', '-').lower()
+    title = pathlib.Path(_file).stem.replace('_', ' ').replace('-', ' ')
+    link = pathlib.Path(_file).stem.replace(' ', '-').replace('_', '-').lower()
     comment = cfg["comments"].get(link, "")
     comment_dict[link] = comment_dict.get(link, comment)
 
@@ -184,7 +186,8 @@ def generate_table(_file :str,
                 'title':col,
                 'field':col,
                 'headerFilter':_type,
-                'headerFilterPlaceholder':f'Search {col}'
+                'headerFilterPlaceholder':f'Search {col}',
+                'formatter':"textarea"
             }
             if _type == 'number':
                 d['headerFilterFunc'] = ">="

@@ -222,5 +222,5 @@ def _plot_snpdensity(reference:str,
                     ).interactive()
 
     chart = chart.to_json()
-    
+    print(chart)
     return chart

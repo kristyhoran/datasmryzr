@@ -49,13 +49,12 @@ def _check_vals(df:pd.DataFrame,
             indf = True
             is_string = True
             if col != _id_col:
+                
                 for val in df[col].unique():
-                    
-                    try:
-                        int(val)
-                        is_string = False
-                    except ValueError:
+                    if isinstance(val, str):   
                         is_string = True
+                    else: 
+                        is_string = False
                     
                 if is_string or col in cfg['categorical_columns']:
                     final_cols.append(col)

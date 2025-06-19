@@ -8,22 +8,20 @@
     <title>{{ title }}</title>
  
     <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     
-  
     <!-- Icon -->
     <script src="https://unpkg.com/feather-icons"></script>
-    
     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css" rel="stylesheet">
        
     <link href="https://unpkg.com/tabulator-tables/dist/css/tabulator.min.css" rel="stylesheet">
     <script type="text/javascript" src="https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js"></script>
     
     <style type="text/css">
-		h6 {
+		h3, h6 {
 			color: {{ background_color }};
 		}
 		
@@ -69,6 +67,7 @@
 		.dropdown-item.active, .dropdown-item:active {
 		  background-color: {{ font_color }};
 		  color: {{ background_color }};
+      
 		}
 
     .btn-outline-primary:hover {
@@ -145,42 +144,220 @@
     #current-table .tabulator-tableHolder .tabulator-table .tabulator-row:nth-child(even) {
     background-color: #444;
 }
-     
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  /* rtl:raw:
+  right: 0;
+  */
+  bottom: 0;
+  /* rtl:remove */
+  left: 0;
+  z-index: 100; /* Behind the navbar */
+  padding: 48px 0 0; /* Height of navbar */
+  box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+}
+
+@media (max-width: 767.98px) {
+  .sidebar {
+    top: 5rem;
+  }
+}
+
+.sidebar-sticky {
+  position: relative;
+  top: 0;
+  height: calc(100vh - 48px);
+  padding-top: .5rem;
+  overflow-x: hidden;
+  overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+}
+
+.sidebar .nav-link {
+  font-weight: 500;
+  color: #333;
+}
+
+.sidebar .nav-link .feather {
+  margin-right: 4px;
+  color: #727272; 
+}
+
+.sidebar .nav-link.active {
+  color: #2470dc;
+}
+
+.sidebar .nav-link:hover .feather,
+.sidebar .nav-link.active .feather {
+  color: inherit;
+}
+
+.sidebar-heading {
+  font-size: .75rem;
+  text-transform: uppercase;
+} 
+.bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+
+      .b-example-divider {
+        height: 3rem;
+        background-color: rgba(0, 0, 0, .1);
+        border: solid rgba(0, 0, 0, .15);
+        border-width: 1px 0;
+        box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
+      }
+
+      .b-example-vr {
+        flex-shrink: 0;
+        width: 1.5rem;
+        height: 100vh;
+      }
+
+      .bi {
+        vertical-align: -.125em;
+        fill: currentColor;
+      }
+
+      .nav-scroller {
+        position: relative;
+        z-index: 2;
+        height: 2.75rem;
+        overflow-y: hidden;
+      }
+
+      .nav-scroller .nav {
+        display: flex;
+        flex-wrap: nowrap;
+        padding-bottom: 1rem;
+        margin-top: -1px;
+        overflow-x: auto;
+        text-align: center;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+      }
+
+
       </style> 
   </head>
   <body>
-    <header>
+    <header class="sticky-top">
       <h1 class="left" style="margin:5px;">{{title}}</h1>
         <p class ="right" style="margin:5px;"> Data generated {{date}} by {{user}} </p>
-        <hr>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light" style="border-bottom: {{ background_color }} solid 10px;">
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
+      </header>
+
+      <div class="container-fluid">
+        <div class = "row">
+          <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+            <div class="position-sticky pt-3 sidebar-sticky">
+              <ul class="nav flex-column">
+                {% if phylo == 'phylo' %}
+                  <li class="nav-item active">
+                    <a class="nav-link phylogeny-button" href="#">Tree<span class="sr-only">(current)</span></a>
+                  </li>
+                {% endif %}
+                {% for t,v in tables.items() %}
+                  <li class="nav-item">
+                    <a class="nav-link detail-button {{v.link}}-button" href="#">{{v.name}}</a>
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
+          </nav>
+          <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+          <!-- Phylo divs -->
+          {% if phylo == 'phylo' %}
+              <div id = "phylogeny">
+                <h3 class="">Tree</h3>
+                
+                <div class="btn-toolbar mb-2 mb-md-0">
+                  <div class="btn-group me-2">
+                    <div class="hidden-nav-phylo btn-group" id = "hidden-nav-phylo"  style = "float:right; ">
+                            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Annotate</button>
+                                <div class="dropdown-menu" id="annotate">
+                                  {% for metadata_column in metadata_columns %}
+                                    <a class="dropdown-item annotate-tree" href="#">{{metadata_column}}</a>
+                                  {% endfor %}
+                                  <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item annotate-tree" href="#">All</a>
+                                  <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item annotate-tree" href="#">Clear</a>
+                                </div>
+                          
+                            <button class="btn btn-sm btn-outline-secondary legend-button" id = "toggle-legend" href="#">Toggle legend</button>
+                            <button class="btn btn-sm btn-outline-secondary reset-tree-button" href="#">Reset</button>
+                            <button class="btn btn-sm btn-outline-secondary download-tree-button" href="#">Download newick</button>
+                            <button class="btn btn-sm btn-outline-secondary export-tree-button" href="#">Download image</button> 
+                    </div>
+                  </div>
+                  
+                </div>
+
+                <div id="tree_string" style="display: none;">
+                  {{newick}}
+                </div>
+                <div id = "phylocanvas" class = "tree" style = " width: 90%; margin:5px; border: 1px solid lightgray; float:left  " >
+                  <!-- Placeholder for phylogenetic tree -->
+                </div>
+                
+            </div>
+            <div id = "legend" class = "tree" style = " width: 90%; margin:5px;  display: none ;flex-wrap: wrap; ">
+              {% for category in legend %}
+              <div class = "legend-{{category}}" style = "border:1px dotted lightgray;">
+              <h6 style="margin: 10px;">{{category}}</h6>
+                {% for lg in legend[category] %}
+                <table style="margin: 20px;" >
+                {% for key,val in lg.items() %}
+                  <tr>
+                    <td > <div class = "square {{val}}"></div> </td> 
+                    <td> <div >{{key}}</div>  </td>
+                  </tr>	
+                {% endfor %}
+                </table>
+                {% endfor %}
+              </div>
+              {% endfor %}
+              
+              
+            </div>
+            {% endif %}
+
+
+          </main>
+        </div>
+      </div>
+
+  
+        <nav class="navbar navbar-expand-lg navbar-light bg-light flex-column" style="border-bottom: {{ background_color }} solid 10px;">
+      
       <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
         
         <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-        {% if phylo == 'phylo' %}
-          <li class="nav-item active">
-            <a class="nav-link phylogeny-button" href="#">Tree<span class="sr-only">(current)</span></a>
-          </li>
-        {% endif %}
-        {% for t,v in tables.items() %}
-          <li class="nav-item">
-            <a class="nav-link detail-button {{v.link}}-button" href="#">{{v.name}}</a>
-          </li>
-        {% endfor %}
+        
         </ul>
       </div>
       <!-- div for phylogeny buttons -->
       <div class="hidden-nav-phylo btn-group" id = "hidden-nav-phylo"  style = "float:right; ">
+        {% if phylo == 'phylo' %}
         <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
           <li lass="nav-item dropdown">
             <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Annotate</a>
             <div class="dropdown-menu" id="annotate">
-            {% for metadata_column in metadata_columns %}
-              <a class="dropdown-item annotate-tree" href="#">{{metadata_column}}</a>
-            {% endfor %}
+            
               <div class="dropdown-divider"></div>
               <a class="dropdown-item annotate-tree" href="#">All</a>
               <div class="dropdown-divider"></div>
@@ -200,7 +377,9 @@
             <a class="nav-link export-tree-button" href="#">Download image</a>
           </li>
         </ul>
+        {% endif %}
       </div>
+      
       <!-- div for download table button -->
       <div id = "table-download"  style = "display: none;">
         <ul class="navbar-nav mr-auto mt-2 mt-lg-0">  
@@ -247,42 +426,12 @@
 <div id="current-table">
     <!-- placeholder for selected table = put selected table in this div -->    
   </div>
+
   <div id = "pan-svg" style = "display:none;margin:10px;">
     {{ pan_svg }}
   </div>
   </div>
-{% if phylo == 'phylo' %}
-  <div id = "phylogeny">
-    
-    
-    <div id="tree_string" style="display: none;">
-    {{newick}}
-    </div>
-    <div id = "phylocanvas" class = "tree" style = " width: 90%; margin:5px; border: 1px solid lightgray; float:left  " >
-    <!-- Placeholder for phylogenetic tree -->
-    </div>
-    
-	</div>
-	<div id = "legend" class = "tree" style = " width: 90%; margin:5px;  display: none ;flex-wrap: wrap; ">
-    {% for category in legend %}
-    <div class = "legend-{{category}}" style = "border:1px dotted lightgray;">
-   	<h6 style="margin: 10px;">{{category}}</h6>
-      {% for lg in legend[category] %}
-      <table style="margin: 20px;" >
-      {% for key,val in lg.items() %}
-				<tr>
-          <td > <div class = "square {{val}}"></div> </td> 
-					<td> <div >{{key}}</div>  </td>
-				</tr>	
-      {% endfor %}
-      </table>
-      {% endfor %}
-    </div>
-    {% endfor %}
-		
-		
-  </div>
-  {% endif %}
+
   </div>         
   
         
@@ -482,7 +631,7 @@ $("a.detail-button").click(function(){
   });
 	}
 	
-  if(section == 'core-genome'){
+  if(section == '{{core_genome}}'){
     
     $("#snp-density-graph").show();
   }
