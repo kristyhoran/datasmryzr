@@ -40,13 +40,17 @@ def get_num_isos(filenames:list) -> int:
         - Only files that exist and contain at least one row are processed.
         - The first column of each file is used to extract unique values.
     """
-
+    # print(filenames)
     unique_isos = set()
     for filename in filenames:
+        
         if check_file_exists(filename):
-            df = pd.read_csv(filename, sep=None, engine="python")
-            if not df.empty:
-                unique_isos.update(df.iloc[:, 0].unique())
+            try:
+                df = pd.read_csv(filename, sep=None, engine="python")
+                if not df.empty:
+                    unique_isos.update(df.iloc[:, 0].unique())
+            except Exception as e:
+                print(f"Error processing file {filename}: {e}")
     return len(unique_isos)
 
 

@@ -90,20 +90,24 @@ def check_masked(mask_file:str,
 
     masked = []
     if mask_file != '' and pathlib.Path(mask_file).exists():
+        
         mask = pd.read_csv(f"{pathlib.Path(mask_file)}", 
                            sep = '\t', 
                            header = None, 
                            names = ['CHR','Pos1','Pos2'])
         mask['CHR'] = mask['CHR'].astype(str)
+        
         for _, row in mask.iterrows():
+            # print(row)
             offset = _dict[row['CHR']]['offset']
             masked.extend(
                 range(row['Pos1'] + offset, row['Pos2'] + offset + 1)
                 )
-
+        
     df['mask'] = df['index'].apply(
-                            lambda x: 'masked' if x in masked else 'unmasked'
-                            )
+                            lambda x: 'masked' if int(x) in masked else 'unmasked'
+                          )
+    
     return df
 
 def get_contig_breaks(_dict:dict) -> list:
@@ -200,6 +204,7 @@ def _plot_snpdensity(reference:str,
     df = pd.DataFrame.from_dict(data, orient='index',columns=['vars']).reset_index()
     
     df = check_masked(mask_file = mask_file, df = df,_dict = _dict)
+    
     for_contigs = get_contig_breaks(_dict = _dict)
     domain = ['masked', 'unmasked']
     range_ = ['#d9dcde', f"{bar_color}"]
@@ -222,5 +227,5 @@ def _plot_snpdensity(reference:str,
                     ).interactive()
 
     chart = chart.to_json()
-    print(chart)
+    # print(chart)
     return chart

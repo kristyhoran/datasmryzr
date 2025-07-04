@@ -22,14 +22,14 @@ def _get_delimiter(file:str) -> str:
         ValueError: If the delimiter cannot be determined.
     """
     if "json" in file:
-        return None
+        return "json"
     with open(file, "r", encoding="utf-8") as f:
         line = f.read()
         if "\t" in line:
             return "\t"
         if "," in line:
             return ","
-        raise ValueError(f"Unknown delimiter in file: {file}")
+    return None
 
 def _get_json_data(_file:str,
                    id_col:None) -> dict:
@@ -158,12 +158,13 @@ def generate_table(_file :str,
     # print(f"ID col:{id_col}")
     if not check_file_exists(_file):
         raise FileNotFoundError(f"Input file {_file} does not exist.")
-    
-    if dlm:
+    print(dlm)
+    if dlm != "json" and dlm is not None:
         data, columns = _get_tabular_data(_file, dlm)
-    else:
+    elif dlm == "json":
         data,columns = _get_json_data(_file, id_col=id_col)
         is_json = True
+
         
     title = pathlib.Path(_file).stem.replace('_', ' ').replace('-', ' ')
     link = pathlib.Path(_file).stem.replace(' ', '-').replace('_', '-').lower()
@@ -178,41 +179,41 @@ def generate_table(_file :str,
         col_dict[link] = []
     
     
-    
-    for col in columns:
-        if col != "_children":
-            _type = cfg["datatype"].get(col, _check_numeric(col=col, data=data, is_json=is_json))
-            d ={
-                'title':col,
-                'field':col,
-                'headerFilter':_type,
-                'headerFilterPlaceholder':f'Search {col}',
-                'formatter':"textarea"
-            }
-            if _type == 'number':
-                d['headerFilterFunc'] = ">="
-                d['headerFilterPlaceholder'] = f'At least...'    
-            col_dict[link].append(d)
-    _id =1
-    for row in data:
-        _sample_dict = {"id":_id}
-        
-        if not is_json:
-            for col in columns:
-                _sample_dict[col] = f"{row[col]}" 
-        else:
-            if id_col:
-                _sample_dict[id_col] = f"{row[id_col]}" if id_col in row else None
-            for col in columns:
-                _sample_dict[col] = f"{row[col]}" if col in row else ""
-            _sample_dict["_children"] = []
-            for sub in row["_children"]:
-                _id = _id + 1
-                _sub_sample_dict = {"id":_id}
+    if dlm:
+        for col in columns:
+            if col != "_children":
+                _type = cfg["datatype"].get(col, _check_numeric(col=col, data=data, is_json=is_json))
+                d ={
+                    'title':col,
+                    'field':col,
+                    'headerFilter':_type,
+                    'headerFilterPlaceholder':f'Search {col}',
+                    'formatter':"textarea"
+                }
+                if _type == 'number':
+                    d['headerFilterFunc'] = ">="
+                    d['headerFilterPlaceholder'] = f'At least...'    
+                col_dict[link].append(d)
+        _id =1
+        for row in data:
+            _sample_dict = {"id":_id}
+            
+            if not is_json:
                 for col in columns:
-                    _sub_sample_dict[col] = f"{sub[col]}"
-                _sample_dict["_children"].append(_sub_sample_dict)
-        _id = _id + 1
-        table_dict[link]['tables'].append(_sample_dict)
+                    _sample_dict[col] = f"{row[col]}" 
+            else:
+                if id_col:
+                    _sample_dict[id_col] = f"{row[id_col]}" if id_col in row else None
+                for col in columns:
+                    _sample_dict[col] = f"{row[col]}" if col in row else ""
+                _sample_dict["_children"] = []
+                for sub in row["_children"]:
+                    _id = _id + 1
+                    _sub_sample_dict = {"id":_id}
+                    for col in columns:
+                        _sub_sample_dict[col] = f"{sub[col]}"
+                    _sample_dict["_children"].append(_sub_sample_dict)
+            _id = _id + 1
+            table_dict[link]['tables'].append(_sample_dict)
 
     return table_dict,col_dict,comment_dict

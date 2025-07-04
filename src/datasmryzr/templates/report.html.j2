@@ -123,13 +123,13 @@
 
 /*Theme the header*/
 #current-table .tabulator-header {
-    background-color:{{ background_color }};
+    background-color:#fff;
     color:#fff;
+    border-bottom: 0px solid #fff;
 }
 
 /*Allow column header names to wrap lines*/
-#current-table .tabulator-header .tabulator-col,
-#current-table .tabulator-header .tabulator-col-row-handle {
+#current-table .tabulator-col {
     white-space: normal;
     background-color: {{ background_color }};
 }
@@ -252,13 +252,13 @@
       </style> 
   </head>
   <body>
-    <header class="sticky-top">
-      <h1 class="left" style="margin:5px;">{{title}}</h1>
-        <p class ="right" style="margin:5px;"> Data generated {{date}} by {{user}} </p>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      </header>
+    <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+   <h1 class="left" style="margin:5px;">{{title}}</h1>
+        <p class ="left" style="margin:5px;"> Data generated {{date}} by {{user}} </p>
+      <button class="navbar-toggler position-right d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+</header>
 
       <div class="container-fluid">
         <div class = "row">
@@ -287,7 +287,7 @@
                 <div class="btn-toolbar mb-2 mb-md-0">
                   <div class="btn-group me-2">
                     <div class="hidden-nav-phylo btn-group" id = "hidden-nav-phylo"  style = "float:right; ">
-                            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Annotate</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Annotate</button>
                                 <div class="dropdown-menu" id="annotate">
                                   {% for metadata_column in metadata_columns %}
                                     <a class="dropdown-item annotate-tree" href="#">{{metadata_column}}</a>
@@ -335,123 +335,56 @@
               
             </div>
             {% endif %}
+           
 
+            <!-- div for tables, graphs and buttons for these types -->
+            <div id ="tabular-data" class = "tabular-data" style = "display: none; margin: 5px;">
+              <h3 id="section-title">Section title</h3>
+                  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                      <div class="btn-toolbar mb-2 mb-md-0">
+                          <div class="hidden-graph-nav btn-group" id = "hidden-graphs"  style = "display:none;">
+                                  <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                                  <!-- <li lass="nav-item dropdown"> -->
+                                      <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Graphs</button>
+                                      <div class="dropdown-menu" id="graphs">
+                                      <a class="dropdown-item snps heatmap" id = "snp-distances-hmp" href="#">Heatmap</a>
+                                      <a class="dropdown-item snps distribution" id = "snp-distances-dist" href="#">Distribution</a>
+                                  </div>
+                                  <!-- </li> -->
+                                  </ul>
+                          </div>
+                          <button class="btn btn-sm btn-outline-secondary csv-download-button download-csv" id = "download-csv" href="#">Download csv</a>
+                      </div>
+                  </div>
+                
+                  <div id = "snp-distances-distribution" class = "hidden-graph" style="display:none">  <!-- placeholder for graphs  --> </div>
+                  <div id = "snp-distances-heatmap" class = "hidden-graph" style="display:none;">  <!-- placeholder for graphs  --> </div>
+                  <div id = "snp-density-graph" class = "hidden-graph" style="display: none;">  <!-- placeholder for graphs  --> </div>
+
+                  <div id = "empty-table" ></div>
+                    <div id="comment"></div>
+                    <div id = "table-div">
+                        <div id="current-table" class="table-responsive" style="display:none;">
+                        <!-- placeholder for selected table = put selected table in this div -->    
+                      </div>
+                    </div>
+                    
+                </div>
 
           </main>
         </div>
       </div>
 
   
-        <nav class="navbar navbar-expand-lg navbar-light bg-light flex-column" style="border-bottom: {{ background_color }} solid 10px;">
-      
-      <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
-        
-        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-        
-        </ul>
-      </div>
-      <!-- div for phylogeny buttons -->
-      <div class="hidden-nav-phylo btn-group" id = "hidden-nav-phylo"  style = "float:right; ">
-        {% if phylo == 'phylo' %}
-        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-          <li lass="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Annotate</a>
-            <div class="dropdown-menu" id="annotate">
-            
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item annotate-tree" href="#">All</a>
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item annotate-tree" href="#">Clear</a>
-            </div>
-          </li>
-          <li lass="nav-item">
-            <a class="nav-link legend-button" id = "toggle-legend" href="#">Toggle legend</a>
-          </li>
-          <li lass="nav-item">
-            <a class="nav-link reset-tree-button" href="#">Reset</a>
-          </li>
-          <li lass="nav-item">
-            <a class="nav-link download-tree-button" href="#">Download newick</a>
-          </li>
-          <li lass="nav-item">
-            <a class="nav-link export-tree-button" href="#">Download image</a>
-          </li>
-        </ul>
-        {% endif %}
-      </div>
-      
-      <!-- div for download table button -->
-      <div id = "table-download"  style = "display: none;">
-        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">  
-          <li lass="nav-item">
-            <a class="nav-link csv-download-button download-csv" href="#">Download csv</a>
-          </li>
-          <!-- <li lass="nav-item">
-            <a class="nav-link excel-download-button" id = "download-excel" href="#">download xlsx</a>
-          </li> -->
-        </ul>
-      </div>
-      <!-- div for distance graphs buttons  -->
-      <div class="hidden-graph-nav btn-group" id = "hidden-graphs"  style = "display:none;">
-        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-          <li lass="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Graphs</a>
-            <div class="dropdown-menu" id="annotate">
-              <a class="dropdown-item snps heatmap" id = "snp-distances-hmp" href="#">Heatmap</a>
-              <a class="dropdown-item snps distribution" id = "snp-distances-dist" href="#">Distribution</a>
-           </div>
-          </li>
-        </ul>
-      </div>
-    </nav>
-    </header>
-    
-
-
-<!-- div for summary table and phylogenetic tree -->
-<div class= "container-fluid">
-<!-- buttons -->
-
-
-
-
-<div id = "empty-table"></div>
-<div id="comment"></div>
-
   
-<div id = "snp-distances-distribution" class = "hidden-graph" style="display:none;">  <!-- placeholder for graphs  --> </div>
-<div id = "snp-distances-heatmap" class = "hidden-graph" style="display:none; overflow-x:auto;">  <!-- placeholder for graphs  --> </div>
-<div id = "snp-density-graph" class = "hidden-graph" style="display: none;">  <!-- placeholder for graphs  --> </div>
-
-<div id="current-table">
-    <!-- placeholder for selected table = put selected table in this div -->    
-  </div>
-
-  <div id = "pan-svg" style = "display:none;margin:10px;">
-    {{ pan_svg }}
-  </div>
-  </div>
-
-  </div>         
-  
-        
-<!-- Datatables (to sort tables) -->
-<!-- <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script> -->
-<!-- <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap.min.js"></script> -->
-<!-- <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script> -->
-<!-- <script type="application/javascript" src="https://cdn.rawgit.com/phylocanvas/phylocanvas-quickstart/v2.8.1/phylocanvas-quickstart.js"></script> -->
-<!-- <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/1.5.6/js/dataTables.buttons.min.js"></script>
-<script src= "https://cdn.datatables.net/buttons/1.5.6/js/buttons.flash.min.js"></script> -->
-<!-- <script src= "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script> -->
-<!-- <script src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.html5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.print.min.js"></script> -->
-
+             
 
 <script src="https://unpkg.com/@phylocanvas/phylocanvas.gl@latest/dist/bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vega@5.20.2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.1.1"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.12.2"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@5.1.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.12.2"></script>
+
+
 
 
 <script>
@@ -463,7 +396,7 @@ function displayWindowSize(){
 	var div = document.getElementById("phylocanvas");
 	// Set the height of the phylocanvas to be 50% of the window height
 	var phylocanvas = document.getElementById("phylocanvas");
-	phylocanvas.style.height = (h*.5) + "px";
+	phylocanvas.style.height = (h*1.5) + "px";
 	return h  
 }
 
@@ -552,9 +485,10 @@ var heatmap_chart = {{ snp_heatmap | safe }};
 });
 
 
-$("a.phylogeny-button").click(function(){
+$(".phylogeny-button").click(function(){
   $("#current-table").empty();
   $("#table-download").hide();
+  $("#tabular-data").hide();
   $("#phylogeny").show();
   $(".tree").show();
   $("#hidden-nav-phylo").show();
@@ -568,7 +502,7 @@ $("a.phylogeny-button").click(function(){
   $("#legend").hide();
 });
 
-$("a.legend-button").click(function(){
+$(".legend-button").click(function(){
   console.log('toggle legend');
   var legend = document.getElementById("legend");
   
@@ -581,8 +515,8 @@ $("a.legend-button").click(function(){
 
 var table_dict = {{tables | tojson}};
 var column_dict = {{ columns | tojson }};
-var comment = {{ comment | tojson }};
-$("a.detail-button").click(function(){
+var comment = {{ comment | tojson }}
+$(".detail-button").click(function(){
   console.log('button clicked');
   $("#table-download").show();
   $("#snp-distances-distribution").hide();
@@ -601,44 +535,37 @@ $("a.detail-button").click(function(){
   $("#comment").empty();
   $("#empty-table").empty();
   $("#comment").append("<p style='margin:5px; font-size:small;'><em>" + comment[section] + "</em></p>");
-  
+  console.log(capitalizeFirstLetter(section).replace(/-/g, ' '));
+  console.log($("#section-title").innerHTML);
+  var secttitle = document.getElementById("section-title");
+  secttitle.innerHTML = capitalizeFirstLetter(section.replace(/-/g, ' '));
   if(section == 'distances') {
-  $("#snp-distances-distribution").show();
-  $("#hidden-graphs").show();
+        var distance_graphs = ["heatmap","distribution"]
+        $("#hidden-graphs").show();
+            $("#snp-distances-distribution").show();
+        $(".dropdown-item").click(function(){
+                console.log($(this).text());
+                for (var i = 0; i < distance_graphs.length;i++) {
+                    if($(this).text().toLowerCase() == distance_graphs[i]){
+                        console.log('showing ' + distance_graphs[i]);
+                        $("#snp-distances-" + distance_graphs[i]).show();
+                    } else {
+                        console.log('hiding ' + distance_graphs[i]);
+                        $("#snp-distances-" + distance_graphs[i]).hide();
+                    }
+                }
+        });
 
-	let containingElement = document.querySelector('#hidden-graphs');
-
-	document.body.addEventListener('click', function( event ){
-		if( containingElement.contains( event.target ) ){
-			// do nothing, click was inside container
-			console.log('clicking a graph tab');
-			// console.log(event.target.innerHTML.toLowerCase());
-			event.target.classList.add('active');
-		}
-		var dgraphs = document.getElementsByClassName('snps');
-		console.log(dgraphs);
-		for (var i = 0; i < dgraphs.length; i++) {
-			if (dgraphs[i].classList.contains('active')) {
-				console.log('snp-distances-' + dgraphs[i].innerHTML.toLowerCase() + ' is active');
-				
-				$("#snp-distances-" + dgraphs[i].innerHTML.toLowerCase()).show();
-				dgraphs[i].classList.remove('active');
-			} else {
-				$("#snp-distances-" + dgraphs[i].innerHTML.toLowerCase()).hide();
-				
-			}
-		}
-  });
-	}
+            }
 	
-  if(section == '{{core_genome}}'){
+  if(section == '{{ core_genome }}'){
     
-    $("#snp-density-graph").show();
+        $("#snp-density-graph").show();
   }
   if(section == 'pan-genome'){
-    $('#pan-svg').show();
+        $('#pan-svg').show();
   }
-  
+  $("#tabular-data").show();
   //create Tabulator on DOM element with id "example-table"
   if(column_dict[section].length > 1){
     var table = new Tabulator("#current-table", {
@@ -655,17 +582,25 @@ $("a.detail-button").click(function(){
     // 	console.log("Row " + row.getData().id + " Clicked!!!!");
     // },
     });
+    console.log(table_dict[section]["tables"].length)
+    if (table_dict[section]["tables"].length > 20 && section == "distances") {
+        console.log("Should hide table " + section);
+        $("#empty-table").append("<p><b>Too many seqeuences to display " + section + ". Please download your matrix and/or visualise distances by selecting a graph.</b></p>");
+        $("#table-div").hide();
+    
+
+    } else {
+      $("#empty-table").empty();
+        $("#tabular-data").show();
+    }
+    
     $("#download-csv").click(function(){
       console.log('clicking download button')
-        table.download("csv", "data.csv", {delimiter:","});
+        table.download("csv", table_dict[section]["link"]+".csv", {delimiter:","});
       });
-    // $("#download-excel").click(function(){
-    //   table.download("xlsx", section + ".xlsx", {sheetName:$(this).text()});
-    // });
   } else {
     console.log("No results available for " + section);
-    $("#comment").empty();
-    $("#empty-table").append("<p><b>No data available for " + section + "</b></p>");
+    $("#comment").empty(); 
 }
       
 });
@@ -694,7 +629,8 @@ $("a.detail-button").click(function(){
 					  interactive:true,
 					  size : {
 						width: document.querySelector("#phylocanvas").getBoundingClientRect().width,
-						height:height}
+						height:height
+          }
 					},
 				  );
 				  
@@ -730,18 +666,19 @@ $("a.detail-button").click(function(){
     // 	console.log("Row " + row.getData().id + " Clicked!!!!");
     // },
     });
-    $("a.download-csv").click(function(){
-      console.log('clicking download button')
-        table.download("csv", "data.csv", {delimiter:","});
-      });
+    // $(".download-csv").click(function(){
+    //   console.log('clicking download button')
+    //     table.download("csv", "data.csv", {delimiter:","});
+    //   });
   } else {
     console.log(tree_string);
-    var tree = drawTree(tree_string, annot, displayWindowSize()/2);
+    var tree = drawTree(tree_string, annot_all, displayWindowSize()/2);
   }
 
   $("#phylocanvas").hover(function(){
     
     var hn = tree.getHighlightedNode();
+    
     
   });
   $(".dropdown-item").click(function(){
@@ -753,15 +690,21 @@ $("a.detail-button").click(function(){
   });
   $("#phylocanvas").click(function(event){
     var hn = tree.getHighlightedNode();
+    // console.log(tree.getNodeById("0"));
+    console.log(hn);
     tree.setRoot(hn.id);
     tree_root.push(hn.id);
+    // console.log(tree_root);
     
   });
 
-
-
-  $("a.reset-tree-button").click(function(){
-    tree.setRoot("1");
+  $(".reset-tree-button").click(function(){
+    console.log('resetting tree');
+    console.log(tree_root);
+    // tree.setRoot(tree_root[0]);
+    // console.log(tree.findNodeById("1"));
+    tree_root = ["1"];
+    tree.setRoot("0");
   });
 
   
@@ -779,14 +722,15 @@ $("a.detail-button").click(function(){
       setTimeout(function() { URL.revokeObjectURL(a.href); }, 1500);
     }
 
-  $("a.download-tree-button").click(function(){
+  $(".download-tree-button").click(function(){
     console.log('downloading newick');
+    var tree_name = "{{title}}".replace(/\s/g, '_').toLowerCase();
     var nwk_download = tree.exportNewick();
-    var filename = 'bohra.nwk'
+    var filename = tree_name + '.nwk'
     downloadString(nwk_download,'text',filename);
   });
 
-  $("a.export-tree-button").click(function(){
+  $(".export-tree-button").click(function(){
     console.log('export');
     var png = tree.exportPNG();
     var filename = 'bohra.png';
@@ -807,7 +751,8 @@ $("a.detail-button").click(function(){
       }
     })
   });
-</script>
+  
+  </script>
 
 <script>
 feather.replace()
