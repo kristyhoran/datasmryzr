@@ -361,12 +361,16 @@
                   <div id = "snp-distances-heatmap" class = "hidden-graph" style="display:none;">  <!-- placeholder for graphs  --> </div>
                   <div id = "snp-density-graph" class = "hidden-graph" style="display: none;">  <!-- placeholder for graphs  --> </div>
 
+
+                  
+                  
                   <div id = "empty-table" ></div>
                     <div id="comment"></div>
                     <div id = "table-div">
                         <div id="current-table" class="table-responsive" style="display:none;">
                         <!-- placeholder for selected table = put selected table in this div -->    
                       </div>
+                      <div id = "pangenome-graph" class = "hidden-graph" style="display:none">  <!-- placeholder for graphs  --> </div>
                     </div>
                     
                 </div>
@@ -484,6 +488,10 @@ var heatmap_chart = {{ snp_heatmap | safe }};
   
 });
 
+var pangenome_chart = {{ pangenome | safe }};
+  vegaEmbed('#pangenome-graph', pangenome_chart).then(function(result){
+  
+});
 
 $(".phylogeny-button").click(function(){
   $("#current-table").empty();
@@ -562,8 +570,8 @@ $(".detail-button").click(function(){
     
         $("#snp-density-graph").show();
   }
-  if(section == 'pan-genome'){
-        $('#pan-svg').show();
+  if(section == 'pangenome'){
+        $('#pangenome-graph').show();
   }
   $("#tabular-data").show();
   //create Tabulator on DOM element with id "example-table"

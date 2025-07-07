@@ -10,6 +10,7 @@ from datasmryzr.tables import generate_table
 from datasmryzr.core_genome import _plot_snpdensity
 from datasmryzr.distances import _plot_histogram, _plot_heatmap
 from datasmryzr.tree import _get_tree_string
+from datasmryzr.pangenome import pangenome_summary, do_pangenome_graph
 
 import pandas as pd
 import pathlib
@@ -53,7 +54,33 @@ def get_num_isos(filenames:list) -> int:
                 print(f"Error processing file {filename}: {e}")
     return len(unique_isos)
 
+def _make_pangenome_summary():
+    pass
 
+def _make_pangenome_graph(
+    pangenome_rtab: str,
+    pangenome_characterization: str = "",
+    pangenome_groups: str = ""
+):
+    """
+    Generate a pangenome graph based on the provided pangenome data.
+
+    Args:
+        pangenome_rtab (str): Path to the gene presence/absence Rtab file.
+        pangenome_characterization (str): Path to the pangenome characterization file.
+        pangenome_groups (str): Path to the pangenome groups file.
+
+    Returns:
+        dict: A dictionary containing the pangenome graph data.
+    """
+    if pangenome_rtab != "":
+        return do_pangenome_graph(
+            pangenome_rtab = pangenome_rtab,
+            pangenome_characterization = pangenome_characterization,
+            pangenome_groups = pangenome_groups
+        )
+    else:
+        return {}
 
 def make_density_plot(
     core_genome: str,
@@ -198,7 +225,10 @@ def smryz(
         template: str, 
         background_color: str, 
         font_color: str,
-        config: str
+        config: str,
+        pangenome_rtab: str = "",
+        pangenome_characterization: str = "",
+        pangenome_groups: str = ""
 ) -> None:
     
     """
@@ -238,6 +268,12 @@ def smryz(
         filenames.append(distance_matrix)
     if core_genome_report != "":
         filenames.append(core_genome_report)
+    if pangenome_rtab != "":
+        pangenome_summary = pangenome_summary(
+            pangenome_rtab = pangenome_rtab,
+            pangenome_characterization = pangenome_characterization
+        )
+        filenames.append(f"{pathlib.Path.cwd() / pangenome_summary}")
     for _file in filenames:
         print(f"Processing file {_file}...")
         table_dict, col_dict, comments = generate_table(
@@ -280,6 +316,11 @@ def smryz(
         mask = mask,
         background_color = background_color,
     ),
+        "pangenome": _make_pangenome_graph(
+            pangenome_rtab = pangenome_rtab,
+            pangenome_characterization = pangenome_characterization,
+            pangenome_groups = pangenome_groups
+        ),
     
         "metadata_tree": metadata_dict["metadata_tree"],
         "metadata_columns": metadata_dict["metadata_columns"],
