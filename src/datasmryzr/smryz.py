@@ -5,12 +5,12 @@ a summary report using a Jinja2 template.
 """
 
 from datasmryzr.annotate import construct_annotations
-from datasmryzr.utils import check_file_exists
+from datasmryzr.utils import check_file_exists, get_config
 from datasmryzr.tables import generate_table
 from datasmryzr.core_genome import _plot_snpdensity
 from datasmryzr.distances import _plot_histogram, _plot_heatmap
 from datasmryzr.tree import _get_tree_string
-from datasmryzr.pangenome import pangenome_summary, do_pangenome_graph
+from datasmryzr.pangenome import _pangenome_summary, do_pangenome_graph
 
 import pandas as pd
 import pathlib
@@ -54,8 +54,36 @@ def get_num_isos(filenames:list) -> int:
                 print(f"Error processing file {filename}: {e}")
     return len(unique_isos)
 
-def _make_pangenome_summary():
-    pass
+def _make_menu(config: str, filenames: list, tree:str) -> list:
+    
+    cfg = get_config(file_path = config)
+
+    menu_dflt = cfg.get("menu", [])
+    
+    
+    if tree == "" and tree in menu_dflt:
+        menu_dflt.remove("tree")
+    
+    menu = []
+    for m in menu_dflt:
+        link = m.replace(' ', '-').replace('_', '-').lower()
+        title = m.replace('_', ' ').replace('-', ' ')
+        d = {"link": link, "name": title}
+        menu.append(d)
+    # print(menu)
+    tmp = []
+    for _file in filenames:
+        title = pathlib.Path(_file).stem.replace('_', ' ').replace('-', ' ')
+        tmp.append(title)
+    for title in sorted(tmp):
+        link = title.lower()
+        if title not in menu_dflt:
+            d = {"link": link, "name": title}
+            menu.append(d)
+
+
+    return menu
+
 
 def _make_pangenome_graph(
     pangenome_rtab: str,
@@ -77,7 +105,7 @@ def _make_pangenome_graph(
         return do_pangenome_graph(
             pangenome_rtab = pangenome_rtab,
             pangenome_characterization = pangenome_characterization,
-            pangenome_groups = pangenome_groups
+            groups = pangenome_groups
         )
     else:
         return {}
@@ -134,6 +162,7 @@ def make_snp_heatmap(
         )
     else:
         return {}
+    
 def make_snp_distances(
     distance_matrix:str,
     bar_color:str = "lightblue",
@@ -263,17 +292,22 @@ def smryz(
     table_dict = {}
     col_dict = {}
     comments = {}
+    
     filenames = [ i for i in filename if check_file_exists(i) ]
+    
     if distance_matrix != "":
         filenames.append(distance_matrix)
     if core_genome_report != "":
         filenames.append(core_genome_report)
+    # print(pangenome_groups)
     if pangenome_rtab != "":
-        pangenome_summary = pangenome_summary(
+        pangenome_summary = _pangenome_summary(
             pangenome_rtab = pangenome_rtab,
-            pangenome_characterization = pangenome_characterization
+            pangenome_characterization = pangenome_characterization,
+            groups = pangenome_groups
         )
         filenames.append(f"{pathlib.Path.cwd() / pangenome_summary}")
+    menu = _make_menu(config, filenames, tree)
     for _file in filenames:
         print(f"Processing file {_file}...")
         table_dict, col_dict, comments = generate_table(
@@ -298,6 +332,7 @@ def smryz(
         "date": f"{datetime.datetime.today().strftime('%Y-%m-%d')}",
         "user": author if author != "" else f"unknown",
         "phylo": "phylo" if tree != "" else "no_phylo",
+        "menu":menu,
         "tables": table_dict,
         "columns": col_dict,
         "comment": comments,

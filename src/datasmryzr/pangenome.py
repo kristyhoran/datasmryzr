@@ -9,7 +9,7 @@ from Bio import SeqIO
 import pathlib
 import gzip
 import csv
-from datasmryzr.utils import check_file_exists, _open_df, _get_pangenome_colors
+from datasmryzr.utils import check_file_exists, _open_df, _get_pangenome_acc
 
 alt.data_transformers.disable_max_rows()
 
@@ -49,7 +49,7 @@ def _generate_datatable(_rtab:str, detail_tab:str = "") -> tuple[pd.DataFrame, l
     
     detailed = _get_dataframe(detail_tab) if detail_tab != "" else pd.DataFrame()
     raw = _get_dataframe(_rtab)
-    ids = raw.columns[1:-1]
+    ids = raw.columns[1:].tolist()
     raw["count"] = raw[ids].apply(calc, axis=1)
     raw["panaroo_class"] = raw.apply(classify, axis=1)
     raw = raw.rename(columns = {"Gene":"gene_name"})
@@ -63,7 +63,8 @@ def _make_pangenome_table(raw : pd.DataFrame,
                           colname:str
                           ) -> str:
     
-    
+    # print(raw)
+    # print(colname)
     grpd = raw.groupby([f"{colname}"]).count()
     total = raw["gene_name"].count()
     grpd["Percentage"] = round(grpd["gene_name"] / total * 100, 1)
@@ -73,16 +74,21 @@ def _make_pangenome_table(raw : pd.DataFrame,
     grpd = grpd.rename(columns={f"{colname}":"Gene class", "gene_name":"Gene count"})
     grpd.sort_values("Gene count", ascending=False)
 
-    grpd.to_csv("pangemome.txt", sep="\t", index=False)
+    grpd.to_csv("pangenome.txt", sep="\t", index=False)
 
-    return "pangemome.txt"
+    return "pangenome.txt"
 
-def pangenome_summary(pangenome_rtab: str,
-    pangenome_characterization: str = "",
-    colname: str = "panaroo_class") -> str:
+def _pangenome_summary(
+                        pangenome_rtab: str,
+                        groups:str,
+                        pangenome_characterization: str = "",
+                        colname: str = "panaroo_class") -> str:
 
-    raw = _generate_datatable(pangenome_rtab, pangenome_characterization)
+    raw,ids = _generate_datatable(pangenome_rtab, pangenome_characterization)
     colname = colname if pangenome_characterization == "" else "specific_class"
+    grps = pd.read_csv(groups, sep="\t", header=0, dtype=str, names = ["variable","group"])
+    if len(list(grps["group"].unique())) == 1:
+        colname = "panaroo_class"
     summary_table = _make_pangenome_table(raw, colname)
     return summary_table
 
@@ -97,10 +103,15 @@ def _graph(raw: pd.DataFrame, colname: str, grps:str, ids:list) -> alt.Chart:
     Returns:
         alt.Chart: Altair chart object.
     """
+    print(grps["group"].unique())
+    if len(list(grps["group"].unique())) == 1:
+        colname = "panaroo_class"
     _dtype = "basic" if colname == "panaroo_class" else "detail"
+    
     xval = "panaroo_class" if colname == "panaroo_class" else "general_class"
-    colors,orders = _get_pangenome_colors(_dtype)
-    raw["order"] = raw[colname].map(orders[_dtype])
+    acc = _get_pangenome_acc(_dtype)
+    colors, orders = acc[0], acc[1]
+    raw["order"] = raw[colname].map(orders)
     summary = alt.Chart(raw, title = "Summary pangenome in dataset").mark_bar().encode(
                         x=alt.X(f"{xval}").title("Class"),
                         y = alt.Y("count()").title("Gene count"),
@@ -115,13 +126,23 @@ def _graph(raw: pd.DataFrame, colname: str, grps:str, ids:list) -> alt.Chart:
                         )
     
     charts = []
-    grps = _get_dataframe(grps) if grps != "" else pd.DataFrame()
+    
     raw = raw.reset_index()
-    raw_mltd = raw.melt(id_vars= ["index",f"{colname}"], value_vars= ids )
+    
+    raw_mltd = raw.melt(id_vars= ["index","gene_name", f"{colname}",], value_vars= ids )
+    # print(raw)
+    # print(raw_mltd)
     # if not grps.empty:
-
-    raw_mltd = raw_mltd.merge(grps, on="variable", how="left")
-    raw_mltd = raw_mltd.rename(columns={"variable":"Group"})
+    # print(grps)
+    if len(list(grps["group"].unique())) > 1:
+        # grps = grps.rename(columns={"variable":"gene_name"})
+        raw_mltd = raw_mltd.merge(grps, on="variable", how="left")
+        
+    else:
+        raw_mltd["group"] = "dataset"
+    # print(raw_mltd)
+    # raw_mltd = raw_mltd.rename(columns={"variable":"Group"})
+    
     raw_mltd = raw_mltd.fillna(1000)
     for grp in sorted(raw_mltd["group"].unique()):
 
@@ -131,7 +152,7 @@ def _graph(raw: pd.DataFrame, colname: str, grps:str, ids:list) -> alt.Chart:
             x=alt.X('index').title(None).axis(None),
             y=alt.Y('value:O').axis(None),
             # column= "variable",
-            row = alt.Row("Group").title(None).header(
+            row = alt.Row("variable").title(None).header(
                 labelAngle=0,labelPadding=0, labelAlign="left", labelFontSize=12,).spacing(0),
             color=alt.Color(f"{colname}").scale(range=colors["_range"], domain=colors["domain"]).title("Gene class"),
             tooltip=[f"{colname}"]
@@ -144,17 +165,19 @@ def _graph(raw: pd.DataFrame, colname: str, grps:str, ids:list) -> alt.Chart:
         labelFontSize=12,
         titleFontSize=14,
         grid=False,
-        strokeWidth=0).to_json()
+        ).to_json()
 
 def do_pangenome_graph(
     pangenome_rtab: str,
     pangenome_characterization: str = "",
+    groups: str = "",
     # colname: str = "panaroo_class"
 ) :
     
     raw,ids = _generate_datatable(pangenome_rtab, pangenome_characterization)
-    colname = colname if pangenome_characterization == "" else "specific_class"
-    grps = _get_dataframe(pangenome_characterization) if pangenome_characterization != "" else ""
+    colname = "panaroo" if pangenome_characterization == "" else "specific_class"
+    if check_file_exists(groups):
+        grps = pd.read_csv(groups, sep="\t", header=0, dtype=str, names = ["variable","group"])
     charts = _graph(raw, colname, grps, ids)
     return charts
 

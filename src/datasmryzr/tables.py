@@ -61,6 +61,8 @@ def _get_json_data(_file:str,
         #     raise ValueError(f"Invalid JSON format in file: {_file}")
     return data,columns
 
+def get_width(_file:str) -> int:
+    pass
 
 def _get_tabular_data(_file:str, dlm:str) -> list:
     """
@@ -158,7 +160,7 @@ def generate_table(_file :str,
     # print(f"ID col:{id_col}")
     if not check_file_exists(_file):
         raise FileNotFoundError(f"Input file {_file} does not exist.")
-    print(dlm)
+    # print(dlm)
     if dlm != "json" and dlm is not None:
         data, columns = _get_tabular_data(_file, dlm)
     elif dlm == "json":
@@ -169,12 +171,15 @@ def generate_table(_file :str,
     title = pathlib.Path(_file).stem.replace('_', ' ').replace('-', ' ')
     link = pathlib.Path(_file).stem.replace(' ', '-').replace('_', '-').lower()
     comment = cfg["comments"].get(link, "")
+    print(comment)
+    comment = "<br>".join(comment) if isinstance(comment, list) else comment
+    print(comment)
     comment_dict[link] = comment_dict.get(link, comment)
 
     if link not in table_dict:
         print(f"Creating table for {title}")
         table_dict[link] = {"link": link, "name": title, "tables": []}
-
+    
     if link not in col_dict:
         col_dict[link] = []
     
@@ -188,11 +193,14 @@ def generate_table(_file :str,
                     'field':col,
                     'headerFilter':_type,
                     'headerFilterPlaceholder':f'Search {col}',
-                    'formatter':"textarea"
+                    'formatter':"textarea",
+                    # "maxWidth": "100px",
                 }
                 if _type == 'number':
                     d['headerFilterFunc'] = ">="
-                    d['headerFilterPlaceholder'] = f'At least...'    
+                    d['headerFilterPlaceholder'] = f'At least...'  
+                if col == "Data assessment":
+                    d["formatter"] = "tickCross"
                 col_dict[link].append(d)
         _id =1
         for row in data:

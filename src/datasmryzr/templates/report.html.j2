@@ -267,12 +267,12 @@
               <ul class="nav flex-column">
                 {% if phylo == 'phylo' %}
                   <li class="nav-item active">
-                    <a class="nav-link phylogeny-button" href="#">Tree<span class="sr-only">(current)</span></a>
+                    <a class="nav-link phylogeny-button" href="#">Tree</a>
                   </li>
                 {% endif %}
-                {% for t,v in tables.items() %}
+                {% for t in menu %}
                   <li class="nav-item">
-                    <a class="nav-link detail-button {{v.link}}-button" href="#">{{v.name}}</a>
+                    <a class="nav-link detail-button {{t.link}}-button" href="#">{{t.name}}</a>
                   </li>
                 {% endfor %}
               </ul>
@@ -413,10 +413,13 @@ function capitalizeFirstLetter(val) {
 // set menu title to capital
 for ( var i = 0; i < menus.length; i++){
   console.log(menus[i].innerHTML);
-  var new_menu = capitalizeFirstLetter(menus[i].innerHTML);
-  menus[i].innerHTML = new_menu;
+  if( menus[i].innerHTML == "mlst" ){
+    var new_menu = menus[i].innerHTML.toUpperCase();
+  } else {
+  var new_menu = capitalizeFirstLetter(menus[i].innerHTML.replace("amr", "AMR"));
 }
-// set up annotation to extract
+  menus[i].innerHTML = new_menu;
+}// set up annotation to extract
 var annot=[];
 var annot_all = {{ metadata_columns | tojson }};
 function updateAnnot(val, annot){
@@ -546,7 +549,11 @@ $(".detail-button").click(function(){
   console.log(capitalizeFirstLetter(section).replace(/-/g, ' '));
   console.log($("#section-title").innerHTML);
   var secttitle = document.getElementById("section-title");
-  secttitle.innerHTML = capitalizeFirstLetter(section.replace(/-/g, ' '));
+  var new_title = capitalizeFirstLetter(section.replace(/-/g, ' ').replace("amr", "AMR"));
+  if (new_title == "Mlst"){
+    new_title = "MLST";
+  }
+  secttitle.innerHTML = new_title;
   if(section == 'distances') {
         var distance_graphs = ["heatmap","distribution"]
         $("#hidden-graphs").show();
@@ -578,6 +585,7 @@ $(".detail-button").click(function(){
   if(column_dict[section].length > 1){
     var table = new Tabulator("#current-table", {
     dataTree:true,
+    resizableColumnFit:true,
     pagination:"local",
     paginationSize:25,
     paginationSizeSelector:true,
