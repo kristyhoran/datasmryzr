@@ -131,9 +131,9 @@ def _graph(raw: pd.DataFrame, colname: str, grps:str, ids:list) -> alt.Chart:
     
     raw_mltd = raw.melt(id_vars= ["index","gene_name", f"{colname}",], value_vars= ids )
     # print(raw)
-    # print(raw_mltd)
+    print(raw_mltd)
     # if not grps.empty:
-    # print(grps)
+    print(grps)
     if len(list(grps["group"].unique())) > 1:
         # grps = grps.rename(columns={"variable":"gene_name"})
         raw_mltd = raw_mltd.merge(grps, on="variable", how="left")
@@ -143,7 +143,7 @@ def _graph(raw: pd.DataFrame, colname: str, grps:str, ids:list) -> alt.Chart:
     # print(raw_mltd)
     # raw_mltd = raw_mltd.rename(columns={"variable":"Group"})
     
-    raw_mltd = raw_mltd.fillna(1000)
+    raw_mltd = raw_mltd.fillna("Ungrouped")
     for grp in sorted(raw_mltd["group"].unique()):
 
 

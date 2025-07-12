@@ -279,8 +279,10 @@
             </div>
           </nav>
           <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+          
           <!-- Phylo divs -->
           {% if phylo == 'phylo' %}
+  
               <div id = "phylogeny">
                 <h3 class="">Tree</h3>
                 
@@ -334,6 +336,7 @@
               
               
             </div>
+
             {% endif %}
            
 
@@ -365,6 +368,31 @@
                   
                   
                   <div id = "empty-table" ></div>
+
+                            <!-- button for modal -->
+                              <button type="button" class="btn btn-sm btn-outline-secondary" id = "information-button" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                Information
+                              </button>
+
+                                <!-- Modal -->
+                                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                  <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                      <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                      </div>
+                                      <div class="modal-body">
+                                       <div id="comment">
+
+                                      </div>
+                                      </div>
+                                      <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
                     <div id="comment"></div>
                     <div id = "table-div">
                         <div id="current-table" class="table-responsive" style="display:none;">
@@ -412,7 +440,7 @@ function capitalizeFirstLetter(val) {
 }
 // set menu title to capital
 for ( var i = 0; i < menus.length; i++){
-  console.log(menus[i].innerHTML);
+  //console.log(menus[i].innerHTML);
   if( menus[i].innerHTML == "mlst" ){
     var new_menu = menus[i].innerHTML.toUpperCase();
   } else {
@@ -527,6 +555,33 @@ $(".legend-button").click(function(){
 var table_dict = {{tables | tojson}};
 var column_dict = {{ columns | tojson }};
 var comment = {{ comment | tojson }}
+
+var dflt = "{{ phylo }}";
+if (dflt != "phylo" ){
+  var secttitle = document.getElementById("section-title");
+  secttitle.innerHTML = "Summary";
+  $("#tabular-data").show();
+  var section = "summary";
+  $("#comment").append("<p style='margin:5px; font-size:small;'><em>" + comment[section] + "</em></p>");
+  //create Tabulator on DOM element with id "example-table"
+  if(column_dict[section].length > 1){
+    var table = new Tabulator("#current-table", {
+    dataTree:true,
+    resizableColumnFit:true,
+    pagination:"local",
+    paginationSize:25,
+    paginationSizeSelector:true,
+    movableColumns:true,
+    // height:205, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
+    data:table_dict[section]['tables'], //assign data to table
+    layout:"fitColumns", //fit columns to width of table (optional)
+    columns:column_dict[section],
+    // rowClick:function(e, row){ //trigger an alert message when the row is clicked
+    // 	console.log("Row " + row.getData().id + " Clicked!!!!");
+    // },
+    });
+}
+}
 $(".detail-button").click(function(){
   console.log('button clicked');
   $("#table-download").show();
@@ -606,8 +661,22 @@ $(".detail-button").click(function(){
     
 
     } else {
-      $("#empty-table").empty();
-        $("#tabular-data").show();
+      $("#comment").empty();
+      $("#download-csv").show();
+      $("#comment").append("<p style='margin:5px; '><em>" + comment[section] + ".</em></p>");
+      var modal_title = document.getElementById("exampleModalLabel")
+      modal_title.innerHTML = "Information about " + new_title + " analysis";
+      $("#table-div").show();
+      if (comment[section] != ""){
+        //  $("#comment").hide();
+        console.log("has comment");
+        $("#information-button").show();
+        
+      } else {
+        console.log("no comment");
+        $("#information-buttonn").hide();
+        // $("#comment").hide();
+      }
     }
     
     $("#download-csv").click(function(){
@@ -615,8 +684,9 @@ $(".detail-button").click(function(){
         table.download("csv", table_dict[section]["link"]+".csv", {delimiter:","});
       });
   } else {
-    console.log("No results available for " + section);
-    $("#comment").empty(); 
+    $("#comment").empty();
+    $("#download-csv").hide();
+      
 }
       
 });
@@ -669,6 +739,7 @@ $(".detail-button").click(function(){
     } else {
       var default_table_name = menus[0].innerHTML.toLowerCase();
     }
+    console.log(default_table_name);
     var table = new Tabulator("#current-table", {
     pagination:"local",
     paginationSize:25,

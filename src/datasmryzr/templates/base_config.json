@@ -1,4 +1,5 @@
 {
+    "default_table": "",
     "comments":{
     
 },
@@ -14,6 +15,6 @@
     "summary"
    ],
     "id_column": "Isolate"
-
+   
 }
 
