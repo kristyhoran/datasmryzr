@@ -534,6 +534,7 @@ $(".phylogeny-button").click(function(){
   $("#comment").empty();
   $("#software-versions").hide();
   $("#snp-distances-distribution").hide();
+  $("#snp-distances-heatmap").hide();
   $("#snp-density-graph").hide();
   $("#hidden-graphs").hide();
   $('#pan-svg').hide();
@@ -586,6 +587,7 @@ $(".detail-button").click(function(){
   console.log('button clicked');
   $("#table-download").show();
   $("#snp-distances-distribution").hide();
+  $("#snp-distances-heatmap").hide();
   $("#snp-distances-buttons").hide();
   $('#pangenome-graph').hide();
   $("#snp-density-graph").hide();
@@ -674,7 +676,7 @@ $(".detail-button").click(function(){
         
       } else {
         console.log("no comment");
-        $("#information-buttonn").hide();
+        $("#information-button").hide();
         // $("#comment").hide();
       }
     }
