@@ -200,7 +200,12 @@ def generate_table(_file :str,
                     d['headerFilterFunc'] = ">="
                     d['headerFilterPlaceholder'] = f'At least...'  
                 if col == "Data assessment":
-                    d["formatter"] = "tickCross"
+                    d["formatter"] = "traffic"
+                    d["formatterParams"]={
+                                            "min":0,
+                                            "max":1,
+                                            "color":["orange","green"],
+                                        }
                 col_dict[link].append(d)
         _id =1
         for row in data:
