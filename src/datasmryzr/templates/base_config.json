@@ -14,7 +14,14 @@
    "menu": [
     "summary"
    ],
-    "id_column": "Isolate"
+    "id_column": "Isolate",
+
+    "summary_graphs":{
+        "summary_file":"summary.tsv",
+        "facets": [
+        ],
+        "vals":[]
+    }
    
 }
 

@@ -188,13 +188,14 @@ def generate_table(_file :str,
         for col in columns:
             if col != "_children":
                 _type = cfg["datatype"].get(col, _check_numeric(col=col, data=data, is_json=is_json))
+                width = max(len(col) * 10, 120)
                 d ={
                     'title':col,
                     'field':col,
                     'headerFilter':_type,
                     'headerFilterPlaceholder':f'Search {col}',
                     'formatter':"textarea",
-                    # "maxWidth": "100px",
+                    "minWidth": f"{width if width > 50 else 50}px",
                 }
                 if _type == 'number':
                     d['headerFilterFunc'] = ">="

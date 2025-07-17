@@ -254,7 +254,7 @@
   <body>
     <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
    <h1 class="left" style="margin:5px;">{{title}}</h1>
-        <p class ="left" style="margin:5px;"> Data generated {{date}} by {{user}} </p>
+        <p class ="left" style="margin:5px;"> Data generated {{date}} by {{user}} <br> contains {{ num_isos }} sequences</p>
       <button class="navbar-toggler position-right d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -394,6 +394,7 @@
                                   </div>
                                 </div>
                     <div id="comment"></div>
+                    <div id = "summary-graph" class = "hidden-graph" style="display:none">  <!-- placeholder for graphs  --> </div>
                     <div id = "table-div">
                         <div id="current-table" class="table-responsive" style="display:none;">
                         <!-- placeholder for selected table = put selected table in this div -->    
@@ -524,17 +525,24 @@ var pangenome_chart = {{ pangenome | safe }};
   
 });
 
+var summary_chart = {{ summary_graph | safe }};
+  vegaEmbed('#summary-graph', summary_chart).then(function(result){
+  
+});
+
 $(".phylogeny-button").click(function(){
   $("#current-table").empty();
   $("#table-download").hide();
   $("#tabular-data").hide();
   $("#phylogeny").show();
+  $("#summary-graph").hide();
   $(".tree").show();
   $("#hidden-nav-phylo").show();
   $("#comment").empty();
   $("#software-versions").hide();
   $("#snp-distances-distribution").hide();
   $("#snp-distances-heatmap").hide();
+  $('#summary-graph').hide();
   $("#snp-density-graph").hide();
   $("#hidden-graphs").hide();
   $('#pan-svg').hide();
@@ -575,7 +583,7 @@ if (dflt != "phylo" ){
     movableColumns:true,
     // height:205, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
     data:table_dict[section]['tables'], //assign data to table
-    layout:"fitColumns", //fit columns to width of table (optional)
+    layout:"fitData", //fit columns to width of table (optional)
     columns:column_dict[section],
     // rowClick:function(e, row){ //trigger an alert message when the row is clicked
     // 	console.log("Row " + row.getData().id + " Clicked!!!!");
@@ -594,7 +602,7 @@ $(".detail-button").click(function(){
   $("#hidden-graphs").hide();
   var section = $(this).text().replace(/\s/g,'-').toLowerCase();
   console.log(section);
-  
+  $("#summary-graph").hide();
   $("#phylogeny").hide();
   $(".tree").hide();
   $("#hidden-nav-phylo").hide();
@@ -637,6 +645,9 @@ $(".detail-button").click(function(){
   if(section == 'pangenome'){
         $('#pangenome-graph').show();
   }
+  if(section == 'summary'){
+        $('#summary-graph').show();
+  }
   $("#tabular-data").show();
   //create Tabulator on DOM element with id "example-table"
   if(column_dict[section].length > 1){
@@ -667,7 +678,7 @@ $(".detail-button").click(function(){
       $("#download-csv").show();
       $("#comment").append("<p style='margin:5px; '><em>" + comment[section] + ".</em></p>");
       var modal_title = document.getElementById("exampleModalLabel")
-      modal_title.innerHTML = "Information about " + new_title + " analysis";
+      modal_title.innerHTML = "Information about " + new_title;
       $("#table-div").show();
       if (comment[section] != ""){
         //  $("#comment").hide();

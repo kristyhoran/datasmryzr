@@ -157,6 +157,19 @@ def _get_vcf(vcf_file:str) -> pd.DataFrame:
     return pd.DataFrame(rows, columns=header)
 
 
+def _get_ref_accession(reference: str) -> str:
+    if pathlib.Path(reference).exists():
+        acc = ""
+        with open(reference, "r") as f:
+            header = f.readline().strip().split("\n")[0]
+
+        if header.startswith(">"):
+            acc = header.strip(">")
+        elif header.startswith("LOCUS"):
+            acc = header.split(" ")[1]
+        return acc
+    return ""
+
 def _plot_snpdensity(reference:str,
                      vcf_file:str, 
                      mask_file:str = '', 
@@ -177,6 +190,7 @@ def _plot_snpdensity(reference:str,
             raise SystemError(f"File {_file} does not exist.")
     
     _dict,offset = _get_offset(reference = f"{pathlib.Path(reference)}")
+    acc = _get_ref_accession(reference)
     chromosomes = list(_dict.keys())
     results = _get_vcf(vcf_file )    
     _maxbins = get_bin_size(_dict = _dict)
@@ -209,7 +223,7 @@ def _plot_snpdensity(reference:str,
     domain = ['masked', 'unmasked']
     range_ = ['#d9dcde', f"{bar_color}"]
     bar = alt.Chart(df).mark_bar(binSpacing=0).encode(
-        x=alt.X('index:Q', bin=alt.Bin(maxbins=_maxbins), title = "Core genome position.", axis=alt.Axis(ticks=False)),
+        x=alt.X('index:Q', bin=alt.Bin(maxbins=_maxbins), title = f"Core genome position (reference: {acc} ).", axis=alt.Axis(ticks=False)),
         y=alt.Y('vars:Q',title = "Variants observed per 5MB", axis=alt.Axis(ticks=False)),
         tooltip = [alt.Tooltip('index:Q', title = 'Position'), alt.Tooltip('sum(vars):Q', title = 'SNPs')],
         color=alt.Color('mask', scale = alt.Scale(domain=domain, range=range_), legend=None)

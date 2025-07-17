@@ -11,6 +11,7 @@ from datasmryzr.core_genome import _plot_snpdensity
 from datasmryzr.distances import _plot_histogram, _plot_heatmap
 from datasmryzr.tree import _get_tree_string
 from datasmryzr.pangenome import _pangenome_summary, do_pangenome_graph
+from datasmryzr.summary import summary_graphs
 
 import pandas as pd
 import pathlib
@@ -162,7 +163,21 @@ def make_snp_heatmap(
         )
     else:
         return {}
-    
+
+def _make_summary_graph(
+        config: str = "",
+        bkg_color: str = "#343a40"
+                    ) -> dict:
+    """
+    Generate a summary graph for pangenome data.
+
+    Returns:
+        dict: A dictionary containing the summary graph data.
+    """
+    # Placeholder for the summary graph data
+    # This function can be expanded to include actual graph generation logic
+    return summary_graphs( config=config)
+
 def make_snp_distances(
     distance_matrix:str,
     bar_color:str = "lightblue",
@@ -356,6 +371,10 @@ def smryz(
             pangenome_characterization = pangenome_characterization,
             pangenome_groups = pangenome_groups
         ),
+        "summary_graph" : _make_summary_graph(
+            config=config,
+            bkg_color=background_color
+            ),
     
         "metadata_tree": metadata_dict["metadata_tree"],
         "metadata_columns": metadata_dict["metadata_columns"],
@@ -368,6 +387,6 @@ def smryz(
     print(f"Loading template {template}...")
     template = _get_template(template)
     target = _get_target(output, title)
-
+    print(data["title"])
     print("Rendering template...")
     target.write_text(template.render(data))
