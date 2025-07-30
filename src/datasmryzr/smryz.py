@@ -272,7 +272,9 @@ def smryz(
         config: str,
         pangenome_rtab: str = "",
         pangenome_characterization: str = "",
-        pangenome_groups: str = ""
+        pangenome_groups: str = "",
+        pipeline: str = "not provided",
+        pipeline_version: str = "not provided"
 ) -> None:
     
     """
@@ -375,7 +377,8 @@ def smryz(
             config=config,
             bkg_color=background_color
             ),
-    
+        "pipeline_name": pipeline,
+        "pipeline_version": pipeline_version,
         "metadata_tree": metadata_dict["metadata_tree"],
         "metadata_columns": metadata_dict["metadata_columns"],
         "colors_css": metadata_dict["colors_css"],

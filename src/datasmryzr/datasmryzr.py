@@ -27,8 +27,8 @@ from datasmryzr.smryz import smryz
 @click.option("--pangenome_rtab", "-ptab", type = str, default = "", help = "Path to the gene_presence_absence.Rtab file output from Panaroo.")
 @click.option("--pangenome_characterization", "-pchr", type = str, default = "", help = "Path to the pangenome characterization file output where genes are classified into general_class and specific_class (run as part of the bohra pipelin, adapted from https://github.com/ghoresh11/twilight).")
 @click.option("--pangenome_groups", "-pgrps", type = str, default = "", help = "Path to file for grouping pangenome data.")
-
-
+@click.option("--pipeline", "-pl", type = str, default = "not provided", help = "Name of the pipeline that generated the data. Default is 'not provided'.")
+@click.option("--pipeline_version", "-plv", type = str, default = "not provided", help = "Version of the pipeline that generated the data. Default is 'not provided'.")
 def smryzr(output:str, 
            title:str, 
            description:str, 
