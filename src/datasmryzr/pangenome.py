@@ -103,7 +103,7 @@ def _graph(raw: pd.DataFrame, colname: str, grps:str, ids:list) -> alt.Chart:
     Returns:
         alt.Chart: Altair chart object.
     """
-    print(grps["group"].unique())
+    # print(grps["group"].unique())
     if len(list(grps["group"].unique())) == 1:
         colname = "panaroo_class"
     _dtype = "basic" if colname == "panaroo_class" else "detail"
@@ -131,9 +131,9 @@ def _graph(raw: pd.DataFrame, colname: str, grps:str, ids:list) -> alt.Chart:
     
     raw_mltd = raw.melt(id_vars= ["index","gene_name", f"{colname}",], value_vars= ids )
     # print(raw)
-    print(raw_mltd)
+    # print(raw_mltd)
     # if not grps.empty:
-    print(grps)
+    # print(grps)
     if len(list(grps["group"].unique())) > 1:
         # grps = grps.rename(columns={"variable":"gene_name"})
         raw_mltd = raw_mltd.merge(grps, on="variable", how="left")

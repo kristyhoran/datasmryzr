@@ -15,6 +15,7 @@ from datasmryzr.smryz import smryz
 @click.option('--annotate', '-a', help = "Path to tabular file that can be used to annotate trees (tree tiplabels must be first column). If --annotate_cols not used all columns in this file will be used.",default = "", type = str, show_default = True)
 @click.option('--annotate_cols', '-ac', help = "Comma separated list of columns to be used to annotate the tree. ", default = "all", type = str, show_default = True)
 @click.option('--distance-matrix', '-dm', help="Specify the path to the file that can be used as a distance matrix to generate pairwise distance plots and heatmap.", type = str, default = "", show_default = True)
+@click.option('--cluster-table', '-ct', help="Specify the path to the file that can be used as a cluster table.", type = str, default = "", show_default = True)
 @click.option('--core-genome', '-cg', help="Specify the path to the file that can be used to generate a distribution of variants across a genome - a core.vcf file", type = str,default = "", show_default = True)
 @click.option('--core-genome-report', '-cgr', help="Specify the path to the file that contaims core genome summary report - required for core genome graph", type = str,default = "", show_default = True)
 @click.option('--reference', '-r', help="Specify the path to the reference file that can be used to generate a distribution of variants across a genome. Required if --core-genome is used.", type = str,default = "", show_default = True)
@@ -37,6 +38,7 @@ def smryzr(output:str,
            tree:str, 
            annotate:str, 
            annotate_cols:str, 
+           cluster_table:str,
            distance_matrix:str, 
            core_genome:str, 
            reference:str, 
@@ -48,7 +50,10 @@ def smryzr(output:str,
            core_genome_report:str,
            pangenome_rtab:str,
            pangenome_characterization:str,
-           pangenome_groups:str
+           pangenome_groups:str,
+           pipeline:str,
+           pipeline_version:str
+
            ) -> None:
     """
     This is a small tool to generate a html and pdf files, collating and summarizing your pathogen genomics results tables and trees/networks.
@@ -63,6 +68,7 @@ def smryzr(output:str,
         tree = tree,
         annotate = annotate,
         annotate_cols = annotate_cols,
+        cluster_table = cluster_table,
         distance_matrix = distance_matrix,
         core_genome = core_genome,
         core_genome_report = core_genome_report,
@@ -75,6 +81,8 @@ def smryzr(output:str,
         pangenome_characterization = pangenome_characterization,
         pangenome_rtab = pangenome_rtab,
         pangenome_groups = pangenome_groups,
+        pipeline = pipeline,
+        pipeline_version = pipeline_version
     )
     
 

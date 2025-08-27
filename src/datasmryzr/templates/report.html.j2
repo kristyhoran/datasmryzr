@@ -23,6 +23,9 @@
     
     
     <style type="text/css">
+    body {
+        background-color: #f7f9fa;
+      }
 		h3, h6 {
 			color: {{ background_color }};
 		}
@@ -41,7 +44,11 @@
             background-color: {{ background_color }};
             color: {{ font_color }};
     }
-    
+    canvas.marks {
+     width: 100%;
+     max-width: 100%;
+     }
+
     .hidden-graph{
       margin: 2em;
     }
@@ -84,7 +91,9 @@
       background-color:white;
       border-radius: 4px;
     }
-
+    .nav-link {
+      color: #343a40;
+    }
     .btn-outline-secondary {
       color: {{ background_color }};
       border-color: {{ background_color }};
@@ -136,155 +145,22 @@
         background-color: #444;
     }
 
-    .sidebar {
-      position: fixed;
-      top: 0;
-      /* rtl:raw:
-      right: 0;
-      */
-      bottom: 0;
-      /* rtl:remove */
-      left: 0;
-      z-index: 100; /* Behind the navbar */
-      padding: 48px 0 0; /* Height of navbar */
-      box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
-    }
-
-    @media (max-width: 767.98px) {
-      .sidebar {
-        top: 5rem;
-      }
-    }
-
-    .sidebar-sticky {
-      position: relative;
-      top: 0;
-      height: calc(100vh - 48px);
-      padding-top: .5rem;
-      overflow-x: hidden;
-      overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
-    }
-
-    .sidebar .nav-link {
-      font-weight: 500;
-      color: #333;
-    }
-
-    .sidebar .nav-link .feather {
-      margin-right: 4px;
-      color: #727272; 
-    }
-
-    .sidebar .nav-link.active {
-      color: #2470dc;
-    }
-
-    .sidebar .nav-link:hover .feather,
-    .sidebar .nav-link.active .feather {
-      color: inherit;
-    }
-
-    .sidebar-heading {
-      font-size: .75rem;
-      text-transform: uppercase;
-    } 
-    .bd-placeholder-img {
-            font-size: 1.125rem;
-            text-anchor: middle;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            user-select: none;
-          }
-
-          @media (min-width: 768px) {
-            .bd-placeholder-img-lg {
-              font-size: 3.5rem;
-            }
-          }
-
-          .b-example-divider {
-            height: 3rem;
-            background-color: rgba(0, 0, 0, .1);
-            border: solid rgba(0, 0, 0, .15);
-            border-width: 1px 0;
-            box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
-          }
-
-          .b-example-vr {
-            flex-shrink: 0;
-            width: 1.5rem;
-            height: 100vh;
-          }
-
-          .bi {
-            vertical-align: -.125em;
-            fill: currentColor;
-          }
-
-          .nav-scroller {
-            position: relative;
-            z-index: 2;
-            height: 2.75rem;
-            overflow-y: hidden;
-          }
-
-          .nav-scroller .nav {
-            display: flex;
-            flex-wrap: nowrap;
-            padding-bottom: 1rem;
-            margin-top: -1px;
-            overflow-x: auto;
-            text-align: center;
-            white-space: nowrap;
-            -webkit-overflow-scrolling: touch;
-          }
-
-
       </style> 
   </head>
   <body>
     <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-        <h2 class="left" style="margin:5px;">bohra microbial genomics pipeline</h2>
-        <button class="navbar-toggler position-right d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+        <h2 class="left" style="margin:5px;">{{title}}</h2>
+        <button class="navbar-toggler position-right d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
-    </header>
-
-      <div class="container-fluid">
-        <div class = "row">
-          <!-- Sidebar menu -->
-            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-              <!-- set up a sticky menu -->
-              <div class="position-sticky pt-3 sidebar-sticky">
-                <!-- unordered list for the menu on the left -->
-                <ul class="nav flex-column">
-                    {% if phylo == 'phylo' %}
-                      <li class="nav-item active">
-                        <a class="nav-link phylogeny-button" href="#">Tree</a>
-                      </li>
-                    {% endif %}
-                    {% for t in menu %}
-                      <li class="nav-item">
-                        <a class="nav-link detail-button {{t.link}}-button" href="#">{{t.name}}</a>
-                      </li>
-                    {% endfor %}
-                </ul>
-              </div>
-            </nav>
-          <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4" id = "main-content">
-          <!-- summary dashboard -->
-          <div id="summary-dashboard" style = "margin: 20px; padding: 20px; ">
+        <div id="summary-dashboard" style = "width:60%; margin: 20px; padding: 20px; ">
           <!-- dashborad header block -->
-              <div id= "workflow-summary" style = "display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+              <div id= "workflow-summary" style = "display: flex; flex-wrap: wrap; align-items: center; margin-bottom: 20px;">
                 <h4 >Workflow summary</h4>
-                <button class="btn btn-sm btn-outline-secondary" id="workflow-summary-toggle" style = "margin-left: 10px;"><i class="bi bi-chevron-bar-contract"></i></button>
+                <button class="btn btn-sm btn-outline-secondary" id="workflow-summary-toggle" style = "margin-left: 10px;"><i style = "color:white;" class="bi bi-chevron-bar-contract"></i></button>
               </div>
               <!-- workflow summary content -->
-              <dl id = "workflow-summary-content" style = "display: flex; flex-wrap: wrap; margin: 10px;border: 1px solid lightgray; background-color: white; padding: 10px;">
-                <div class="col-md-2">
-                  <dt>Job ID</dt>
-                  <dd>{{ title }}</dd>
-                </div>
+              <dl id = "workflow-summary-content" style = "display: flex; flex-wrap: wrap; margin: 5px;border: 1px solid lightgray; padding: 5px;">
                 <div class="col-md-2">
                   <dt>User</dt>
                   <dd>{{ user }}</dd>
@@ -294,7 +170,7 @@
                   <dd>{{ date }}</dd>
                 </div>
                 <div class="col-md-2">
-                  <dt>Number of Isolates</dt>
+                  <dt>Isolates</dt>
                   <dd>{{ num_isos }}</dd>
                 </div>
                 {% if pipeline_name != 'not provided' %}
@@ -306,11 +182,39 @@
                 {% if pipeline_version != 'not provided' %} 
                 <div class="col-md-2">
                   <dt>Pipeline Version</dt>
-                  <dd>{{ pipeline_version</dd>
+                  <dd>{{ pipeline_version}}</dd>
                 </div>
                 {% endif %}
               </dl>
             </div>
+    </header>
+
+      <div class="container-fluid">
+        <div class = "row">
+          <nav  class="navbar navbar-expand-lg bg-body-tertiary" style="background-color:white;">
+              <!-- set up a sticky menu -->
+              <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+                <!-- unordered list for the menu on the left -->
+                <ul class="navbar-nav">
+                    
+                <!-- unordered list for the menu on the left -->
+                <ul class="nav">
+                    {% if phylo == 'phylo' %}
+                      <li class="nav-item active">
+                        <a class="nav-link tree-button" href="#">Tree</a>
+                      </li>
+                    {% endif %}
+                    {% for t in menu %}
+                      <li class="nav-item">
+                        <a class="nav-link detail-button {{t.link}}-button" href="#">{{t.name}}</a>
+                      </li>
+                    {% endfor %}
+                </ul>
+              </div>
+            </nav>
+          <main class="col-md-1 ms-sm-auto col-lg-12 px-md-4" id = "main-content">
+          <!-- summary dashboard -->
+          
           <!-- Phylo divs -->
           {% if phylo == 'phylo' %}
   
@@ -342,7 +246,7 @@
                   
                 </div>
 
-                <div id = "phylocanvas" class = "tree" style = " width: 90%; margin:5px; border: 1px solid lightgray; float:left  " >
+                <div id = "phylocanvas" class = "tree" style = "width: 100%; margin:5px; border: 1px solid lightgray; float:left; background-color: white;">
                   <!-- Placeholder for phylogenetic tree -->
                 </div>
                 
@@ -369,42 +273,48 @@
 
             {% endif %}
            
-<!-- div for tables -->
+        <!-- div for tables -->
                 <div id = "current-table" class = "table-div" style = "display: none; margin: 20px; padding: 20px; border: 1px solid lightgray;">
                   <div id = "table-header" style = "display: flex; justify-content: space-between; align-items: center;">
                     <h3 id = "sect-title">Current Table</h3>
                     <div id = "table-buttons">
                       <button class="btn btn-sm btn-outline-secondary" style= "margin:2px;" id="tables-button" data-bs-toggle="collapse" data-bs-target="#table"><i class="bi bi-table" style = "font-size: 1.2rem;"></i> Table</button>
                       <button class="btn btn-sm btn-outline-secondary" style= "margin:2px;" id="graphs-button" data-bs-toggle="collapse" data-bs-target="#graphs"><i class="bi bi-file-bar-graph" style = "font-size: 1.2rem;"></i> Graph</button>
-                      <button class="btn btn-sm btn-outline-secondary" style= "margin:2px;" id="graphs-button" data-bs-toggle="collapse" data-bs-target="#graphs-heatmap"><i class="bi bi-file-bar-graph" style = "font-size: 1.2rem;"></i> Graph - heatmap</button>
-                      <button class="btn btn-sm btn-outline-secondary" style= "margin:2px;" id="graphs-button" data-bs-toggle="collapse" data-bs-target="#graphs-distribution"><i class="bi bi-file-bar-graph" style = "font-size: 1.2rem;"></i> Graph - distribution</button>
+                      <button class="btn btn-sm btn-outline-secondary" style= "margin:2px;" id="graphs-heatmap-button" data-bs-toggle="collapse" data-bs-target="#graphs-heatmap"><i class="bi bi-file-bar-graph" style = "font-size: 1.2rem;"></i> Graph - heatmap</button>
+                      <button class="btn btn-sm btn-outline-secondary" style= "margin:2px;" id="graphs-distribution-button" data-bs-toggle="collapse" data-bs-target="#graphs-distribution"><i class="bi bi-file-bar-graph" style = "font-size: 1.2rem;"></i> Graph - distribution</button>
+                      <button class="btn btn-sm btn-outline-secondary" style= "margin:2px;" id="graphs-density-button" data-bs-toggle="collapse" data-bs-target="#graphs-density"><i class="bi bi-file-bar-graph" style = "font-size: 1.2rem;"></i> Graph - density</button>
+                      <button class="btn btn-sm btn-outline-secondary" style= "margin:2px;" id="graphs-statistics-button" data-bs-toggle="collapse" data-bs-target="#graphs-statistics"><i class="bi bi-file-bar-graph" style = "font-size: 1.2rem;"></i> Graph - statistics</button>
                       <button class="btn btn-sm btn-outline-secondary" style= "margin:2px;" id="download-button" data-bs-toggle="collapse" data-bs-target="#download-tables"><i class="bi bi-download" style = "font-size: 1.2rem;"></i> Download</button>
-                      <button class="btn btn-sm btn-outline-secondary" style= "margin:2px;" id="information-button" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="bi bi-info-circle" style = "font-size: 1.2rem;"></i> Info</button>
+                      <button class="btn btn-sm btn-outline-secondary" style= "margin:2px;" id="information-button" data-bs-toggle="collapse" data-bs-target="#for_information"><i class="bi bi-info-circle" style = "font-size: 1.2rem;"></i> Info</button>
                     </div>
                   </div>
                   <div id = "graph-container" >
                     <div id = "summary-graph" class = "hidden-graph" style="display:none">  <!-- placeholder for graphs  --> </div>
                     <div id = "core-genome-stats-graph" class = "hidden-graph" style="display:none">  <!-- placeholder for graphs  --> </div>
+                    <div id = "core-genome-density-graph" class = "hidden-graph" style="display:none">  <!-- placeholder for graphs  --> </div>
                     <div id = "pangenome-graph" class = "hidden-graph" style="display:none">  <!-- placeholder for graphs  --> </div>
                     <div id = "distances-distribution-graph" class = "hidden-graph" style="display:none">  <!-- placeholder for graphs  --> </div>
                     <div id = "distances-heatmap-graph" class = "hidden-graph" style="display:none;">  <!-- placeholder for graphs  --> </div>
+                    <div id = "clusters-graph" class = "hidden-graph" style="display:none;">  <!-- placeholder for graphs  --> </div>
                   </div>
                   
                   <div id="table-container">
 
                   </div>
+                  <div id = "for_information" style = "display: none;">
+                    <div id = "comment"></div>
                 </div>
                 <!-- end div for tables -->
                 <!-- modals -->
                 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                  <div class="modal-dialog modal-lg">
+                  <div class="modal-dialog modal-xl">
                     <div class="modal-content">
                       <div class="modal-header">
                         <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                       </div>
                       <div class="modal-body">
-                        <div id="comment">
+                        <div id="clusters">
 
                       </div>
                       </div>
@@ -415,7 +325,7 @@
                   </div>
                 </div>
 
-<div id = "snp-density-graph" class = "hidden-graph" style="display: none;">  <!-- placeholder for graphs  --> </div>
+
 
           </main>
         </div>
@@ -438,15 +348,15 @@
     var table_dict = {{tables | tojson}};
     var column_dict = {{ columns | tojson }};
     var comment = {{ comment | tojson }}
-
-
+    var distance_dict = {{ distdict | tojson }};
+    
     var snp_distance_chart = {{ snp_distances | safe }};
           vegaEmbed('#distances-distribution-graph', snp_distance_chart).then(function(result){
             
           });
 
     var snp_density_chart = {{ snp_density | safe }};
-      vegaEmbed('#core-genome-stats-graph', snp_density_chart).then(function(result){
+      vegaEmbed('#core-genome-density-graph', snp_density_chart).then(function(result){
       
     });
 
@@ -464,6 +374,15 @@
       vegaEmbed('#summary-graph', summary_chart).then(function(result){
       
     });
+
+    var core_stats_chart = {{ core_stats | safe }};
+          vegaEmbed('#core-genome-stats-graph', core_stats_chart).then(function(result){
+            
+          });
+    var cluster_stats_chart = {{ cluster_stats | safe }};
+          vegaEmbed('#clusters-graph', cluster_stats_chart).then(function(result){
+            
+          });
 function displayWindowSize(){
         // Get width and height of the window excluding scrollbars
         var w = document.documentElement.clientWidth;
@@ -540,9 +459,11 @@ function displayWindowSize(){
       var tree_root = ["1"];
       var num_nodes = 4;
       // $("#phylocanvas").height(displayWindowSize()/2);
-      var tree_string = document.getElementById('tree_string').innerHTML;
+      var tree_string = document.getElementById('tree_string');
       // console.log(tree_string);
       // console.log(document.querySelector("#tree").getBoundingClientRect().width);
+      if( tree_string ){
+      tree_string  = tree_string.innerHTML;
       $('#phylocanvas').empty();
       var tree = new phylocanvas.PhylocanvasGL(
                   document.querySelector("#phylocanvas"),
@@ -570,6 +491,7 @@ function displayWindowSize(){
                   );
                   
                 return tree;
+                }
     }
     // function for downloading the tree as a newick file
     function downloadString(text, fileType, fileName) {
@@ -590,12 +512,48 @@ function displayWindowSize(){
         return String(val).charAt(0).toUpperCase() + String(val).slice(1);
     }
     // function for drawring a table
-    function drawTable(table_id, data, columns, layout = "fitColumns") {
+    function drawTable(table_id, data, columns, layout = "fitColumns", cluster = false) {
         console.log("drawing table");
         console.log(data);
+        if (cluster){
+                    var makebutton = function(cell, formatterParams, onRendered){
+                      var button = document.createElement("button");
+                      button.innerHTML = "<i class='bi bi-eye' style = 'font-size: 1.2rem;'></i> View";
+                      button.classList.add("btn");
+                      button.classList.add("btn-sm");
+                      button.classList.add("btn-outline-secondary");
+                      button.setAttribute('data-bs-toggle', 'modal'); 
+                      button.setAttribute('data-bs-target', '#exampleModal'); 
+                      button.addEventListener("click", function(){
+                          var cl = document.getElementById("clusters");
+                          var modal_title = document.getElementById("exampleModalLabel")
+                          modal_title.innerHTML = "SNP distances for cluster : " +  cell.getRow().getData()['Cluster ID'];
+                          var disttable = new Tabulator("#clusters", {
+                              data: distance_dict[cell.getRow().getData()['Cluster ID']]['table'],
+                              columns: distance_dict[cell.getRow().getData()['Cluster ID']]['columns'],
+                              layout: "fitColumns",
+                              pagination: "local",
+                              paginationSize: 10,
+                              paginationSizeSelector: [5, 10, 20, 50],
+                              height: "400px",
+                          });
+                          console.log("Button clicked for row ID: " + cell.getRow().getData()['Cluster ID']);
+                      });
+                      return button;
+                    }
+                    
+                    columns = [
+                      {title:"Cluster ID", field:"Cluster ID", headerFilter:"input"},
+                      {title:"Num seqs", field:"Num seqs", headerFilter:"number"},
+                      {title:"Distances", formatter:makebutton, hozAlign:"center"},
+                      
+                    ]
+                    }
         // console.log(columns);
         // console.log(options);
         var table = new Tabulator("#" + table_id, {
+            dataTree:true,
+            dataTreeStartExpanded:true,
             data: data,
             columns: columns,
             layout: layout,
@@ -606,6 +564,85 @@ function displayWindowSize(){
             // ...options
         });
         return table;
+    }
+    function setupTableDiv( section ){
+      console.log(section);
+      $("#tree").removeClass("active");
+      $(".detail-button").removeClass("active");
+      $("#download-button").show();
+      $(".hidden-graph").hide();
+      $("#graphs-distribution-button").hide();
+      $("#graphs-heatmap-button").hide();
+      $("#graphs-button").hide();
+      console.log('detail button clicked');
+      console.log($(this).text());
+      // a spot to add check for has_graph if yes show graph button if no hide graph button
+      $("#tree").hide();
+      console.log(table_dict[section]["tables"])
+      // $(this).addClass("active");
+      // var section = $(this).text().replace(/\s/g,'-').toLowerCase();
+      console.log(section);
+      var new_title = capitalizeFirstLetter(section.replace(/-/g, ' ')).replace("amr", "AMR");
+      if (new_title == "Mlst"){
+        new_title = "MLST";
+      }
+      var secttitle = document.getElementById("sect-title");
+      secttitle.innerHTML = new_title;
+      if (section == "distances"){
+        $("#graphs-distribution-button").show();
+        $("#graphs-heatmap-button").show();
+        $("#graphs-button").hide();
+        $("#graphs-density-button").hide();
+        $("#graphs-statistics-button").hide();
+      } else if (section == "{{core_genome}}"){
+        $("#graphs-button").hide();
+        $("#graphs-density-button").show();
+        $("#graphs-statistics-button").show();
+      } else if (table_dict[section]["has_graph"] == "true"){
+        $("#graphs-button").show();
+        $("#graphs-distribution-button").hide();
+        $("#graphs-heatmap-button").hide();
+        $("#graphs-density-button").hide();
+        $("#graphs-statistics-button").hide();
+      } else {
+        $("#graphs-button").hide();
+        $("#graphs-distribution-button").hide();
+        $("#graphs-heatmap-button").hide();
+        $("#graphs-density-button").hide();
+        $("#graphs-statistics-button").hide();
+      }
+      $("#comment").append("<p style='margin:5px; '><em>" + comment[section] + ".</em></p>");
+      var modal_title = document.getElementById("exampleModalLabel")
+      modal_title.innerHTML = "Information about " + new_title + " analysis";
+      $("#current-table").show();
+      // $("#current-table").html("<h3>" + section.replace(/-/g, ' ') + "</h3>");
+      
+      // $("#current-table").append("<div id='table-container' style = 'margin-top:10px;'></div>");
+      if (section == "clusters"){
+        var cluster = true;
+      } else {
+        var cluster = false;
+      }
+      table= drawTable(table_id = "table-container", 
+          data = table_dict[section]["tables"], 
+          columns = column_dict[section],
+        layout = "fitColumns",
+        cluster = cluster
+        );
+      $("#download-button").click(function(){
+      console.log('clicking download button')
+        table.download("csv", table_dict[section]["link"]+".csv", {delimiter:","});
+      });
+      window.addEventListener('resize', function() {
+        console.log("resizing graph");
+        w = displayWindowWidth();
+        console.log(summary_chart["vconcat"][3]["width"]);    
+        // summary_chart["vconcat"][3]["width"] = w * 0.8;   
+        // console.log(summary_chart["vconcat"][3]["width"]); 
+      });
+       
+  
+
     }
           // set up menu
   var menus = document.getElementsByClassName("nav-link");
@@ -635,10 +672,10 @@ function displayWindowSize(){
       var content = document.getElementById("workflow-summary-content");
       if (content.style.display === "none") {
           content.style.display = "flex";
-          this.innerHTML = '<i class="bi bi-chevron-bar-contract"></i>';
+          this.innerHTML = '<i style="color:white;" class="bi bi-chevron-bar-contract"></i>';
       } else {
           content.style.display = "none";
-          this.innerHTML = '<i class="bi bi-chevron-bar-expand"></i>';
+          this.innerHTML = '<i style="color:white;" class="bi bi-chevron-bar-expand"></i>';
       }
   });
   // tree button click to show tree
@@ -713,70 +750,112 @@ function displayWindowSize(){
   });
 
   // buttons for tables and graphs
-
+  {% if phylo != 'phylo' %}
+  setupTableDiv(section = {{menu[0]["link"] | tojson }});
+  {% endif %}
+  // buttons for tables and graphs
+  
   $(".detail-button").click(function(){
-      $("#tree").removeClass("active");
-      $(".detail-button").removeClass("active");
-      console.log('detail button clicked');
-      console.log($(this).text());
-      // a spot to add check for has_graph if yes show graph button if no hide graph button
-      $("#tree").hide();
-      $(this).addClass("active");
-      var section = $(this).text().replace(/\s/g,'-').toLowerCase();
-      console.log(section);
-      var new_title = capitalizeFirstLetter(section.replace(/-/g, ' ').replace("amr", "AMR"));
-      if (new_title == "Mlst"){
-        new_title = "MLST";
-      }
-      var secttitle = document.getElementById("sect-title");
-      secttitle.innerHTML = new_title;
-      $("#comment").append("<p style='margin:5px; '><em>" + comment[section] + ".</em></p>");
-      var modal_title = document.getElementById("exampleModalLabel")
-      modal_title.innerHTML = "Information about " + new_title + " analysis";
-      $("#current-table").show();
-      // $("#current-table").html("<h3>" + section.replace(/-/g, ' ') + "</h3>");
       
-      // $("#current-table").append("<div id='table-container' style = 'margin-top:10px;'></div>");
-      table= drawTable(table_id = "table-container", 
-          data = table_dict[section]["tables"], 
-          columns = column_dict[section],
-        layout = "fitColumns");
-      $("#download-button").click(function(){
-      console.log('clicking download button')
-        table.download("csv", table_dict[section]["link"]+".csv", {delimiter:","});
-      });
-      window.addEventListener('resize', function() {
-        console.log("resizing graph");
-        w = displayWindowWidth();
-        console.log(summary_chart["vconcat"][3]["width"]);    
-        // summary_chart["vconcat"][3]["width"] = w * 0.8;   
-        // console.log(summary_chart["vconcat"][3]["width"]); 
-      });
-          // options = JSON.parse(document.getElementById(section + "-options").innerHTML));
-      // $("#tree").addClass("active");
-      // $("#current-table").hide(); 
+      var section = $(this).text().replace(/\s/g,'-').toLowerCase();
+      setupTableDiv(section = section);
+      $(this).addClass("active");
+      
   });
   $("#graphs-button").click(function(){
       console.log('graphs button clicked');
       $("#table-container").hide();
+      $(".hidden-graph").hide();
       // $("#graphs-button").hide();
       // $("tables-button").show();
+      $("#for_information").hide();
       console.log("selected menu: " + $(".detail-button.active").text());
       var section = $(".detail-button.active").text().replace(/\s/g,'-').toLowerCase();
       console.log(section);
       $("#" + section + "-graph").show();
       $("#download-button").hide();
   });
+  $("#graphs-heatmap-button").click(function(){
+      console.log('graphs heatmap button clicked');
+      $("#table-container").hide();
+      $(".hidden-graph").hide();
+      // $("#graphs-button").hide();
+      // $("tables-button").show();
+      $("#for_information").hide();
+      console.log("selected menu: " + $(".detail-button.active").text());
+      var section = $(".detail-button.active").text().replace(/\s/g,'-').toLowerCase();
+      console.log(section);
+      $("#" + section + "-heatmap-graph").show();
+      $("#download-button").hide();
+  });
+  $("#graphs-distribution-button").click(function(){
+      console.log('graphs heatmap button clicked');
+      $(".hidden-graph").hide();
+      $("#table-container").hide();
+      // $("#graphs-button").hide();
+      // $("tables-button").show();
+      $("#for_information").hide();
+      console.log("selected menu: " + $(".detail-button.active").text());
+      var section = $(".detail-button.active").text().replace(/\s/g,'-').toLowerCase();
+      console.log(section);
+      $("#" + section + "-distribution-graph").show();
+      $("#download-button").hide();
+  });
+  $("#graphs-statistics-button").click(function(){
+      console.log('graphs heatmap button clicked');
+      $("#table-container").hide();
+      $(".hidden-graph").hide();
+      // $("#graphs-button").hide();
+      // $("tables-button").show();
+      $("#for_information").hide();
+      console.log("selected menu: " + $(".detail-button.active").text());
+      var section = $(".detail-button.active").text().replace(/\s/g,'-').toLowerCase();
+      console.log(section);
+      $("#core-genome-stats-graph").show();
+      $("#download-button").hide();
+
+  });
+  $("#graphs-density-button").click(function(){
+      console.log('graphs heatmap button clicked');
+      $("#table-container").hide();
+      $(".hidden-graph").hide();
+      // $("#graphs-button").hide();
+      // $("tables-button").show();
+      $("#for_information").hide();
+      console.log("selected menu: " + $(".detail-button.active").text());
+      var section = $(".detail-button.active").text().replace(/\s/g,'-').toLowerCase();
+      console.log(section);
+      $("#core-genome-density-graph").show();
+      $("#download-button").hide();
+
+  });
+  $("#information-button").click(function(){
+      console.log('graphs button clicked');
+      var section = $(".detail-button.active").text().replace(/\s/g,'-').toLowerCase();
+      console.log("selected menu: " + section);
+      $("#table-container").hide();
+      $("#for_information").show();
+      $("#download-button").show();
+      // $("#tables-button").hide();
+      // $("#graphs-button").show();
+      $("#" + section + "-graph").hide(); 
+      $(".hidden-graph").hide();
+  });
+
   $("#tables-button").click(function(){
       console.log('graphs button clicked');
       var section = $(".detail-button.active").text().replace(/\s/g,'-').toLowerCase();
       console.log("selected menu: " + section);
       $("#table-container").show();
       $("#download-button").show();
+      $("#for_information").hide();
       // $("#tables-button").hide();
       // $("#graphs-button").show();
-      $("#" + section + "-graph").hide();
+      $("#" + section + "-graph").hide(); 
+      $(".hidden-graph").hide();
   });
+
+
   </script>
 </body>
 </html>

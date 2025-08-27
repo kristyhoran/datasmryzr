@@ -5,6 +5,7 @@ SNP density plots for core genome analysis.
 
 import altair as alt
 import pandas as pd
+import numpy as np
 from Bio import SeqIO
 import pathlib
 import gzip
@@ -243,3 +244,54 @@ def _plot_snpdensity(reference:str,
     chart = chart.to_json()
     # print(chart)
     return chart
+
+def _plot_stats(core_genome_report:str,
+               bar_color:str = "#343a40") -> alt.Chart:
+    """
+    Function to plot the core genome statistics.
+    Args:
+        core_genome_stats (str): Path to the core genome statistics file.
+    Returns:
+        alt.Chart: Altair chart object.
+    """
+    if check_file_exists(core_genome_report):
+        df = pd.read_csv(core_genome_report, sep='\t')
+        df['% Not aligned'] = df['Unaligned'] / df['Length'] * 100
+    
+        cols = ['% Aligned','% Not aligned', 'Heterozygous',
+       'Low coverage' ]
+        
+        charts = []
+        for col in cols:
+            if col in df.columns:
+                df['jitter_x'] = df[f"{col}"].astype('category').cat.codes + np.random.uniform(-1000,10, len(df))
+                box = alt.Chart(df).mark_boxplot(extent='min-max', opacity=.3, color = bar_color).encode(
+                    x=alt.X(f"{col}:Q", sort=None),
+                    # y='Value',
+                    # color='Isolate'
+                    
+                ).properties(
+                width=1200,
+                # height=150
+            )
+                scatter = alt.Chart(df).mark_circle(size=80, color = bar_color).encode(
+                    x=alt.X(f"{col}:Q"), # Hide axis for cleaner overlay
+                    # Add jitter if desired (e.g., using a calculated jitter column or a transform)
+                    yOffset='jitter_x:Q',
+                    tooltip=['Isolate', f'{col}:Q'],
+                ).properties(
+                width=1200,
+                # height=200
+                )
+                
+                fig = box + scatter
+                charts.append(fig)
+        if charts != []:
+            combined_chart = alt.vconcat(*charts).resolve_scale(
+                    y='independent').configure_axis(
+                                    grid=False
+                    ).configure_view(
+                    stroke=None
+            )
+            return combined_chart.to_json()
+    return {}

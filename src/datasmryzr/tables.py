@@ -44,9 +44,10 @@ def _get_json_data(_file:str,
         json_str = f.read()
         data = ast.literal_eval(json_str)
         # tmp_data = data[0]
-        # print(data)
+        print(data)
         columns = set()
         for row in data:
+            print(row)
             if "_children" in row:
                 # print("Children found")
                 for child in row["_children"]:
@@ -125,7 +126,8 @@ def _check_numeric(col:str,
                     
     return "number" if len(is_numeric)==1 and True in is_numeric else "input"
 
-        
+
+
 def generate_table(_file :str, 
                    table_dict:dict, 
                    col_dict:dict,
@@ -171,9 +173,9 @@ def generate_table(_file :str,
     title = pathlib.Path(_file).stem.replace('_', ' ').replace('-', ' ')
     link = pathlib.Path(_file).stem.replace(' ', '-').replace('_', '-').lower()
     comment = cfg["comments"].get(link, "")
-    print(comment)
+    # print(comment)
     comment = "<br>".join(comment) if isinstance(comment, list) else comment
-    print(comment)
+    # print(comment)
     comment_dict[link] = comment_dict.get(link, comment)
 
     if link not in table_dict:
@@ -227,7 +229,11 @@ def generate_table(_file :str,
                     for col in columns:
                         _sub_sample_dict[col] = f"{sub[col]}"
                     _sample_dict["_children"].append(_sub_sample_dict)
+                    
             _id = _id + 1
             table_dict[link]['tables'].append(_sample_dict)
-
+            table_dict[link]['has_graph'] = 'true' if link in cfg["has_graph"] else 'false'
+            # for i in table_dict[link]['tables']:
+            #     if 'plasmid' in i:
+            #         print(i)
     return table_dict,col_dict,comment_dict

@@ -7,11 +7,12 @@ a summary report using a Jinja2 template.
 from datasmryzr.annotate import construct_annotations
 from datasmryzr.utils import check_file_exists, get_config
 from datasmryzr.tables import generate_table
-from datasmryzr.core_genome import _plot_snpdensity
+from datasmryzr.core_genome import _plot_snpdensity, _plot_stats
 from datasmryzr.distances import _plot_histogram, _plot_heatmap
 from datasmryzr.tree import _get_tree_string
 from datasmryzr.pangenome import _pangenome_summary, do_pangenome_graph
 from datasmryzr.summary import summary_graphs
+from datasmryzr.clusters import get_cluster_table, get_cluster_graphs,get_cluster_distances
 
 import pandas as pd
 import pathlib
@@ -45,14 +46,18 @@ def get_num_isos(filenames:list) -> int:
     # print(filenames)
     unique_isos = set()
     for filename in filenames:
-        
-        if check_file_exists(filename):
-            try:
-                df = pd.read_csv(filename, sep=None, engine="python")
-                if not df.empty:
-                    unique_isos.update(df.iloc[:, 0].unique())
-            except Exception as e:
-                print(f"Error processing file {filename}: {e}")
+        if 'version' not in filename:
+            if check_file_exists(filename):
+                try:
+                    df = pd.read_csv(filename, sep=None, engine="python")
+                    # print(df)
+                    if not df.empty:
+                        for i in list(df.iloc[:, 0].unique()):
+                            # print(f"Adding unique isolate: {i}")
+                            unique_isos.add(i)
+                except Exception as e:
+                    print(f"Error processing file {filename}: {e}")
+        # print("UNIQUE ISOLATES: ", unique_isos)
     return len(unique_isos)
 
 def _make_menu(config: str, filenames: list, tree:str) -> list:
@@ -65,23 +70,28 @@ def _make_menu(config: str, filenames: list, tree:str) -> list:
     if tree == "" and tree in menu_dflt:
         menu_dflt.remove("tree")
     
-    menu = []
-    for m in menu_dflt:
-        link = m.replace(' ', '-').replace('_', '-').lower()
-        title = m.replace('_', ' ').replace('-', ' ')
-        d = {"link": link, "name": title}
-        menu.append(d)
+    
     # print(menu)
     tmp = []
     for _file in filenames:
         title = pathlib.Path(_file).stem.replace('_', ' ').replace('-', ' ')
         tmp.append(title)
+    menu = []
+    for m in menu_dflt:
+        link = m.replace(' ', '-').replace('_', '-').lower()
+        title = m.replace('_', ' ').replace('-', ' ')
+        if title in tmp:
+            d = {"link": link, "name": title}
+            # print(d)
+            menu.append(d)
     for title in sorted(tmp):
-        link = title.lower()
-        if title not in menu_dflt:
+        # print(title)
+        link = title.lower().replace(' ', '-')
+        if link not in menu_dflt:
+            print("not found : ", link)
             d = {"link": link, "name": title}
             menu.append(d)
-
+    
 
     return menu
 
@@ -199,6 +209,41 @@ def make_snp_distances(
     else:
         return {}
 
+def make_cluster_stats(
+        distances:str,
+        clusters:str,
+        # bar_color:str = "lightblue",
+):
+    if distances != "" and clusters != "":
+        return get_cluster_graphs(
+            distances = distances,
+            clusters = clusters,
+            # bar_color=bar_color
+        )
+    else:
+        return {}
+
+def make_core_stats(
+    core_genome_report:str,
+    bar_color:str = "lightblue",
+):
+    """
+    Function to make SNP distances.
+    Args:
+        distance_matrix (str): Path to the distance matrix file.
+        reference (str): Path to the reference genome file.
+        mask (str): Path to the mask file.
+    Returns:
+        dict: Dictionary containing the SNP distances data.
+    """
+    if core_genome_report != "":
+        return _plot_stats(
+            core_genome_report= core_genome_report,
+            bar_color=bar_color
+        )
+    else:
+        return {}
+
 def _get_template(template:str) -> jinja2.Template:
     """
     Function to get the template.
@@ -262,6 +307,7 @@ def smryz(
         annotate: str, 
         annotate_cols: str, 
         distance_matrix: str, 
+        cluster_table: str,
         core_genome: str, 
         core_genome_report: str,
         reference: str, 
@@ -316,7 +362,12 @@ def smryz(
         filenames.append(distance_matrix)
     if core_genome_report != "":
         filenames.append(core_genome_report)
-    # print(pangenome_groups)
+    if cluster_table != "" and distance_matrix != "":
+        filenames.append(get_cluster_table(cluster_table, distance_matrix))
+        # filenames.remove(cluster_table)
+        filenames = [filename for filename in filenames if filename != cluster_table]
+    print("Filenames to be processed: ", filenames)
+    print(pangenome_groups)
     if pangenome_rtab != "":
         pangenome_summary = _pangenome_summary(
             pangenome_rtab = pangenome_rtab,
@@ -353,6 +404,7 @@ def smryz(
         "tables": table_dict,
         "columns": col_dict,
         "comment": comments,
+        "distdict": get_cluster_distances(cluster_table, distance_matrix) if cluster_table != "" and distance_matrix != "" else {},
         "newick": tree_string,
         "core_genome": _parse_genome_file_name(core_genome_report),
         "snp_distances": make_snp_distances(
@@ -377,6 +429,16 @@ def smryz(
             config=config,
             bkg_color=background_color
             ),
+        "core_stats": make_core_stats(
+            core_genome_report = core_genome_report,
+            bar_color = background_color
+        ),
+        "cluster_stats": make_cluster_stats(
+            distances = distance_matrix,
+            clusters = cluster_table,
+            # bar_color = background_color
+        ),
+        "annotate": annotate,
         "pipeline_name": pipeline,
         "pipeline_version": pipeline_version,
         "metadata_tree": metadata_dict["metadata_tree"],

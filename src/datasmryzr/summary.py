@@ -59,20 +59,21 @@ def _generate_summary_graphs(df:pd.DataFrame, facets: list, vals: list, bkg_colo
             print(f"Warning: {val} not found in the data.")
             continue        
         if fpres:
-            chrt = alt.Chart(df).mark_bar(opacity=0.5).encode(
+            chrt = alt.Chart(df, title = f"{val}").mark_bar(opacity=0.5).encode(
                 x=alt.X(f"{val}:Q", bin=alt.Bin(maxbins=50)).title(val),
                 y=alt.Y('count()').title("Count"),
                 color=alt.Color(f'{fac}:O').title(f"{fac}").scale(scheme='viridis'),
             ).properties(
-                width=850,
+                width=1200,
                 height=200
             )
         else:
-            chrt = alt.Chart(df).mark_bar(opacity=0.5,color = f"{bkg_color}").encode(
+            chrt = alt.Chart(df,title = f"{val}").mark_bar(opacity=0.5,color = f"{bkg_color}").encode(
                 x=alt.X(f"{val}:Q", bin=alt.Bin(maxbins=50)).title(val),
                 y=alt.Y('count()').title("Count"),
             ).properties(
-                width=850,
+                width=1200,
+                
                 height=200
             )
         nums.append(chrt)
@@ -84,7 +85,7 @@ def _generate_summary_graphs(df:pd.DataFrame, facets: list, vals: list, bkg_colo
         labelFontSize=12,
         titleFontSize=14,
         grid=False,
-        ).to_json()
+        ).properties().to_json()
 
 
 
