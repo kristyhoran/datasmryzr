@@ -197,7 +197,7 @@ def generate_table(_file :str,
                     'headerFilter':_type,
                     'headerFilterPlaceholder':f'Search {col}',
                     'formatter':"textarea",
-                    "minWidth": f"{width if width > 50 else 50}px",
+                    # "minWidth": f"{width if width > 50 else 50}px",
                 }
                 if _type == 'number':
                     d['headerFilterFunc'] = ">="

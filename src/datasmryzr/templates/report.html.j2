@@ -279,6 +279,7 @@
                     <h3 id = "sect-title">Current Table</h3>
                     <div id = "table-buttons">
                       <button class="btn btn-sm btn-outline-secondary" style= "margin:2px;" id="tables-button" data-bs-toggle="collapse" data-bs-target="#table"><i class="bi bi-table" style = "font-size: 1.2rem;"></i> Table</button>
+                      <button class="btn btn-sm btn-outline-secondary" style= "margin:2px;" id="toggle-width-button" data-bs-toggle="collapse" data-bs-target="#table-toggle"><i class="bi bi-aspect-ratio-fill" style = "font-size: 1.2rem;"></i> Fit to window</button>
                       <button class="btn btn-sm btn-outline-secondary" style= "margin:2px;" id="graphs-button" data-bs-toggle="collapse" data-bs-target="#graphs"><i class="bi bi-file-bar-graph" style = "font-size: 1.2rem;"></i> Graph</button>
                       <button class="btn btn-sm btn-outline-secondary" style= "margin:2px;" id="graphs-heatmap-button" data-bs-toggle="collapse" data-bs-target="#graphs-heatmap"><i class="bi bi-file-bar-graph" style = "font-size: 1.2rem;"></i> Graph - heatmap</button>
                       <button class="btn btn-sm btn-outline-secondary" style= "margin:2px;" id="graphs-distribution-button" data-bs-toggle="collapse" data-bs-target="#graphs-distribution"><i class="bi bi-file-bar-graph" style = "font-size: 1.2rem;"></i> Graph - distribution</button>
@@ -298,7 +299,7 @@
                     <div id = "clusters-graph" class = "hidden-graph" style="display:none;">  <!-- placeholder for graphs  --> </div>
                   </div>
                   
-                  <div id="table-container">
+                  <div id="table-container" style= "overflow-x:auto; width:100%;">
 
                   </div>
                   <div id = "for_information" style = "display: none;">
@@ -543,8 +544,8 @@ function displayWindowSize(){
                     }
                     
                     columns = [
-                      {title:"Cluster ID", field:"Cluster ID", headerFilter:"input"},
-                      {title:"Num seqs", field:"Num seqs", headerFilter:"number"},
+                      {title:"Cluster ID", field:"Cluster ID"},
+                      {title:"Num seqs", field:"Num seqs"},
                       {title:"Distances", formatter:makebutton, hozAlign:"center"},
                       
                     ]
@@ -565,7 +566,7 @@ function displayWindowSize(){
         });
         return table;
     }
-    function setupTableDiv( section ){
+    function setupTableDiv( section, layout = "fitDataTable") {
       console.log(section);
       $("#tree").removeClass("active");
       $(".detail-button").removeClass("active");
@@ -626,7 +627,7 @@ function displayWindowSize(){
       table= drawTable(table_id = "table-container", 
           data = table_dict[section]["tables"], 
           columns = column_dict[section],
-        layout = "fitColumns",
+        layout =layout,
         cluster = cluster
         );
       $("#download-button").click(function(){
@@ -755,13 +756,37 @@ function displayWindowSize(){
   {% endif %}
   // buttons for tables and graphs
   
-  $(".detail-button").click(function(){
-      
+   $(".detail-button").click(function(){
+      $("#toggle-width-button").text(" Fit to window");
+      $("#toggle-width-button").prepend("<i class='i bi-aspect-ratio-fill' style = 'font-size: 1.2rem;'></i>");
       var section = $(this).text().replace(/\s/g,'-').toLowerCase();
       setupTableDiv(section = section);
       $(this).addClass("active");
       
   });
+
+  $("#toggle-width-button").click(function(){
+      var section = $(".detail-button.active").text().replace(/\s/g,'-').toLowerCase();
+      console.log("selected menu: " + section);
+      var current_layout = $(this).text();
+      if( current_layout == " Fit to window"){
+        console.log("Will need to change table to fitColumns");
+        
+        setupTableDiv(section = section, layout = "fitColumns");
+        $("." + section + "-button").addClass("active");
+        $(this).text(" Fit to data");
+        $(this).prepend("<i class='i bi-aspect-ratio' style = 'font-size: 1.2rem;'></i>");
+      } else {
+        console.log("Will need to change table to fitData");
+        $("." + section + "-button").addClass("active");
+        setupTableDiv(section = section, layout = "fitDataTable");
+        $("." + section + "-button").addClass("active");
+        $(this).text(" Fit to window");
+        $(this).prepend("<i class='i bi-aspect-ratio-fill' style = 'font-size: 1.2rem;'></i>");
+      }
+      console.log(current_layout);
+  });
+
   $("#graphs-button").click(function(){
       console.log('graphs button clicked');
       $("#table-container").hide();
