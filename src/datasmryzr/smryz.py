@@ -445,6 +445,7 @@ def smryz(
         "metadata_columns": metadata_dict["metadata_columns"],
         "colors_css": metadata_dict["colors_css"],
         "legend": metadata_dict["legend"],
+        "download_prefix": f"{title.replace(' ', '_').replace(':', '_').replace('/', '_').lower()}"
        
        
     }

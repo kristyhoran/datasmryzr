@@ -147,7 +147,7 @@ def _graph(raw: pd.DataFrame, colname: str, grps:str, ids:list) -> alt.Chart:
     for grp in sorted(raw_mltd["group"].unique()):
 
 
-        chart = alt.Chart(raw_mltd[(raw_mltd["value"] == 1) & (raw_mltd["group"] == grp)], title = alt.Title(f"Genes present in group: {grp}" if grp != 500 else f"Not grouped",
+        chart = alt.Chart(raw_mltd[(raw_mltd["value"] == 1) & (raw_mltd["group"] == grp)], title = alt.Title(f"Genes present in cluster: {grp}" if grp != 500 else f"Not grouped",
                                                                                                             anchor="end")).mark_tick().encode(
             x=alt.X('index').title(None).axis(None),
             y=alt.Y('value:O').axis(None),
