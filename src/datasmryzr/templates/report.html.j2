@@ -635,7 +635,7 @@ function displayWindowSize(){
         );
       $("#download-button").click(function(){
       console.log('clicking download button')
-        table.download("csv", "{{download_prefix}}_" + "table_dict[section]["link"]+".csv", {delimiter:","});
+        table.download("csv", "{{download_prefix}}_" + table_dict[section]["link"]+".csv", {delimiter:","});
       });
       window.addEventListener('resize', function() {
         console.log("resizing graph");
