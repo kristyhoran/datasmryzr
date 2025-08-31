@@ -66,7 +66,7 @@ def _get_pangenome_acc(_dtype:str)-> dict:
                  '#d9d9d9']
         }
     }
-    print(colors[_dtype])
+    # print(colors[_dtype])
     orders = {
         "detail":{
             "Lineage specific core":3,
@@ -90,5 +90,5 @@ def _get_pangenome_acc(_dtype:str)-> dict:
             "Rare":1
             }
     }
-    print(orders[_dtype])
+    # print(orders[_dtype])
     return [colors[_dtype],orders[_dtype]]
