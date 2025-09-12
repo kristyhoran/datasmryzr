@@ -75,7 +75,11 @@ def _make_menu(config: str, filenames: list, tree:str) -> list:
     tmp = []
     for _file in filenames:
         title = pathlib.Path(_file).stem.replace('_', ' ').replace('-', ' ')
-        tmp.append(title)
+        try:
+            df = pd.read_csv(_file, sep='\t')
+            tmp.append(title)
+        except Exception as e:
+            print(f"Error reading file {_file}: {e}")
     menu = []
     for m in menu_dflt:
         link = m.replace(' ', '-').replace('_', '-').lower()
@@ -378,13 +382,16 @@ def smryz(
     menu = _make_menu(config, filenames, tree)
     for _file in filenames:
         print(f"Processing file {_file}...")
-        table_dict, col_dict, comments = generate_table(
-            _file = _file, 
-            table_dict= table_dict, 
-            col_dict=col_dict,
-            comment_dict=comments, 
-            cfg_path = config)
-        print(f"File {_file} processed.")
+        try:
+            table_dict, col_dict, comments = generate_table(
+                _file = _file, 
+                table_dict= table_dict, 
+                col_dict=col_dict,
+                comment_dict=comments, 
+                cfg_path = config)
+            print(f"File {_file} processed.")
+        except Exception as e:
+            print(f"Error processing file {_file}: {e}")
     
     metadata_dict = construct_annotations(
         path = annotate,

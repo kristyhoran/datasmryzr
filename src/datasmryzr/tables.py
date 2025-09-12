@@ -78,6 +78,7 @@ def _get_tabular_data(_file:str, dlm:str) -> list:
         reader = csv.DictReader(f, delimiter = dlm)
         data = [row for row in reader]
         columns = list(reader.fieldnames)
+        # print(data)
     return data,columns
 
 def _decide_type(val:str,
@@ -185,7 +186,7 @@ def generate_table(_file :str,
     if link not in col_dict:
         col_dict[link] = []
     
-    
+    # try:
     if dlm:
         for col in columns:
             if col != "_children":
@@ -233,7 +234,9 @@ def generate_table(_file :str,
             _id = _id + 1
             table_dict[link]['tables'].append(_sample_dict)
             table_dict[link]['has_graph'] = 'true' if link in cfg["has_graph"] else 'false'
-            # for i in table_dict[link]['tables']:
-            #     if 'plasmid' in i:
-            #         print(i)
+                # for i in table_dict[link]['tables']:
+                #     if 'plasmid' in i:
+                #         print(i)
+    # except Exception as e:
+    #     print(f"An error has occured reading {_file}: {e}")
     return table_dict,col_dict,comment_dict

@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>klebs test</title>
+    <title>{{title}}</title>
  
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
@@ -413,7 +413,7 @@ function displayWindowSize(){
     }
     // functions for getting annotation for the tree
     var annot=[];
-    var annot_all = ["Source", "Tx:9"];
+    var annot_all = {{ metadata_columns | tojson }};
     function updateAnnot(val, annot){
         console.log("val : ");
         console.log(val[0].classList);
@@ -479,7 +479,7 @@ function displayWindowSize(){
                       blockLength: 48, // block size in pixels
                       blockPadding: 2, // the gap size between blocks in pixels
                       blockHeaderFontSize:15,
-                      metadata :{'2014-00624': {'Source': {'colour': '#8c6d31', 'label': 'Human'}, 'Tx:9': {'colour': '#8c6d31', 'label': '8'}}, '2015-24656': {'Source': {'colour': '#8c6d31', 'label': 'Human'}, 'Tx:9': {'colour': '#393b79', 'label': 'UC'}}, '2017-06750': {'Source': {'colour': '#8c6d31', 'label': 'Human'}, 'Tx:9': {'colour': '#393b79', 'label': 'UC'}}, '2017-22038': {'Source': {'colour': '#8c6d31', 'label': 'Human'}, 'Tx:9': {'colour': '#393b79', 'label': 'UC'}}, '2018-12153': {'Source': {'colour': '#8c6d31', 'label': 'Human'}, 'Tx:9': {'colour': '#393b79', 'label': 'UC'}}, '2018-17139': {'Source': {'colour': '#8c6d31', 'label': 'Human'}, 'Tx:9': {'colour': '#393b79', 'label': 'UC'}}, '2019-07257': {'Source': {'colour': '#8c6d31', 'label': 'Human'}, 'Tx:9': {'colour': '#393b79', 'label': 'UC'}}, '2020-00323': {'Source': {'colour': '#8c6d31', 'label': 'Human'}, 'Tx:9': {'colour': '#7b4173', 'label': '2'}}, '2020-26061': {'Source': {'colour': '#8c6d31', 'label': 'Human'}, 'Tx:9': {'colour': '#7b4173', 'label': '2'}}, '2020-26061-2': {'Source': {'colour': '#393b79', 'label': 'Environmental'}, 'Tx:9': {'colour': '#7b4173', 'label': '2'}}, '2022-064706': {'Source': {'colour': '#8c6d31', 'label': 'Human'}, 'Tx:9': {'colour': '#393b79', 'label': 'UC'}}, '2022-064730': {'Source': {'colour': '#8c6d31', 'label': 'Human'}, 'Tx:9': {'colour': '#393b79', 'label': 'UC'}}, '2022-078816': {'Source': {'colour': '#8c6d31', 'label': 'Human'}, 'Tx:9': {'colour': '#393b79', 'label': 'UC'}}, '2022-116968': {'Source': {'colour': '#8c6d31', 'label': 'Human'}, 'Tx:9': {'colour': '#393b79', 'label': 'UC'}}, '2022-134941': {'Source': {'colour': '#8c6d31', 'label': 'Human'}, 'Tx:9': {'colour': '#393b79', 'label': 'UC'}}, '2023-006064': {'Source': {'colour': '#8c6d31', 'label': 'Human'}, 'Tx:9': {'colour': '#637939', 'label': '1'}}, '2023-007860': {'Source': {'colour': '#8c6d31', 'label': 'Human'}, 'Tx:9': {'colour': '#843c39', 'label': '4'}}, '2023-008863': {'Source': {'colour': '#8c6d31', 'label': 'Human'}, 'Tx:9': {'colour': '#637939', 'label': '1'}}, '2023-008864': {'Source': {'colour': '#8c6d31', 'label': 'Human'}, 'Tx:9': {'colour': '#637939', 'label': '1'}}, '2023-008867': {'Source': {'colour': '#8c6d31', 'label': 'Human'}, 'Tx:9': {'colour': '#637939', 'label': '1'}}, '2023-008868': {'Source': {'colour': '#8c6d31', 'label': 'Human'}, 'Tx:9': {'colour': '#393b79', 'label': 'UC'}}, '2023-008869': {'Source': {'colour': '#8c6d31', 'label': 'Human'}, 'Tx:9': {'colour': '#637939', 'label': '1'}}, '2023-009689': {'Source': {'colour': '#8c6d31', 'label': 'Human'}, 'Tx:9': {'colour': '#637939', 'label': '1'}}, '2023-010475': {'Source': {'colour': '#8c6d31', 'label': 'Human'}, 'Tx:9': {'colour': '#843c39', 'label': '4'}}, '2023-010475-1': {'Source': {'colour': '#393b79', 'label': 'Environmental'}, 'Tx:9': {'colour': '#843c39', 'label': '4'}}, '2023-010475-2': {'Source': {'colour': '#8c6d31', 'label': 'Human'}, 'Tx:9': {'colour': '#843c39', 'label': '4'}}, '2023-010475-3': {'Source': {'colour': '#8c6d31', 'label': 'Human'}, 'Tx:9': {'colour': '#843c39', 'label': '4'}}, '2023-011972': {'Source': {'colour': '#8c6d31', 'label': 'Human'}, 'Tx:9': {'colour': '#637939', 'label': '1'}}, '2023-022320': {'Source': {'colour': '#8c6d31', 'label': 'Human'}, 'Tx:9': {'colour': '#393b79', 'label': 'UC'}}, '2023-024481': {'Source': {'colour': '#8c6d31', 'label': 'Human'}, 'Tx:9': {'colour': '#393b79', 'label': 'UC'}}, '2024-002417': {'Source': {'colour': '#8c6d31', 'label': 'Human'}, 'Tx:9': {'colour': '#393b79', 'label': 'UC'}}, '2024-026824': {'Source': {'colour': '#8c6d31', 'label': 'Human'}, 'Tx:9': {'colour': '#de9ed6', 'label': '3'}}, '2024-027970': {'Source': {'colour': '#8c6d31', 'label': 'Human'}, 'Tx:9': {'colour': '#de9ed6', 'label': '3'}}, '2024-028039': {'Source': {'colour': '#8c6d31', 'label': 'Human'}, 'Tx:9': {'colour': '#de9ed6', 'label': '3'}}},
+                      metadata :{{ metadata_tree | tojson }},
                       source: tree_string,
                       type: phylocanvas.TreeTypes.Rectangular,
                       nodeSize:6,
