@@ -83,11 +83,15 @@ def _pangenome_summary(
                         groups:str,
                         pangenome_characterization: str = "",
                         colname: str = "panaroo_class") -> str:
-
+    
     raw,ids = _generate_datatable(pangenome_rtab, pangenome_characterization)
     colname = colname if pangenome_characterization == "" else "specific_class"
-    grps = pd.read_csv(groups, sep="\t", header=0, dtype=str, names = ["variable","group"])
-    if len(list(grps["group"].unique())) == 1:
+    try:
+        grps = pd.read_csv(groups, sep="\t", header=0, dtype=str, names = ["variable","group"])
+        if len(list(grps["group"].unique())) == 1:
+            colname = "panaroo_class"
+    except:
+        grps = pd.DataFrame()
         colname = "panaroo_class"
     summary_table = _make_pangenome_table(raw, colname)
     return summary_table
