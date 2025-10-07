@@ -96,7 +96,7 @@ def _pangenome_summary(
     summary_table = _make_pangenome_table(raw, colname)
     return summary_table
 
-def _graph(raw: pd.DataFrame, colname: str, grps:str, ids:list) -> alt.Chart:
+def _graph(raw: pd.DataFrame, colname: str, grps:pd.DataFrame, ids:list) -> alt.Chart:
     """
     Generates a bar chart for the pangenome data.
 
@@ -183,8 +183,12 @@ def do_pangenome_graph(
     
     raw,ids = _generate_datatable(pangenome_rtab, pangenome_characterization)
     colname = "panaroo" if pangenome_characterization == "" else "specific_class"
-    if check_file_exists(groups):
+    
+    try:
         grps = pd.read_csv(groups, sep="\t", header=0, dtype=str, names = ["variable","group"])
+    except:
+        grps = pd.DataFrame()
+    
     charts = _graph(raw, colname, grps, ids)
     return charts
 
