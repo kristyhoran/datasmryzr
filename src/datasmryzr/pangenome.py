@@ -108,8 +108,8 @@ def _graph(raw: pd.DataFrame, colname: str, grps:str, ids:list) -> alt.Chart:
         alt.Chart: Altair chart object.
     """
     # print(grps["group"].unique())
-    if len(list(grps["group"].unique())) == 1:
-        colname = "panaroo_class"
+    
+    
     _dtype = "basic" if colname == "panaroo_class" else "detail"
     
     xval = "panaroo_class" if colname == "panaroo_class" else "general_class"
@@ -138,11 +138,14 @@ def _graph(raw: pd.DataFrame, colname: str, grps:str, ids:list) -> alt.Chart:
     # print(raw_mltd)
     # if not grps.empty:
     # print(grps)
-    if len(list(grps["group"].unique())) > 1:
-        # grps = grps.rename(columns={"variable":"gene_name"})
-        raw_mltd = raw_mltd.merge(grps, on="variable", how="left")
-        
-    else:
+    try:
+        if len(list(grps["group"].unique())) > 1:
+            # grps = grps.rename(columns={"variable":"gene_name"})
+            raw_mltd = raw_mltd.merge(grps, on="variable", how="left")
+            
+        else:
+            raw_mltd["group"] = "dataset"
+    except:
         raw_mltd["group"] = "dataset"
     # print(raw_mltd)
     # raw_mltd = raw_mltd.rename(columns={"variable":"Group"})
