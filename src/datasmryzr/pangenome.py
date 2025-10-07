@@ -182,8 +182,8 @@ def do_pangenome_graph(
 ) :
     
     raw,ids = _generate_datatable(pangenome_rtab, pangenome_characterization)
-    colname = "panaroo" if pangenome_characterization == "" else "specific_class"
-    
+    colname = "panaroo_class" if pangenome_characterization == "" else "specific_class"
+    print(raw)
     try:
         grps = pd.read_csv(groups, sep="\t", header=0, dtype=str, names = ["variable","group"])
     except:

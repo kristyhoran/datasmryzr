@@ -190,7 +190,11 @@ def _make_summary_graph(
     """
     # Placeholder for the summary graph data
     # This function can be expanded to include actual graph generation logic
-    return summary_graphs( config=config)
+    try:
+        return summary_graphs( config=config)
+    except Exception as e:
+        print(f"Error generating summary graph: {e}")
+        return {}
 
 def make_snp_distances(
     distance_matrix:str,

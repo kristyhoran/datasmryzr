@@ -84,6 +84,7 @@ def _plot_heatmap(distances:str) -> dict:
         dict: Dictionary containing the plot data.
     """
     df = _get_distances(distances)
+    print(df)
     number_of_isolates = len(df['Isolate1'].unique())
     try:
         chart = alt.Chart(df).mark_rect().encode(
