@@ -14,11 +14,12 @@ from datasmryzr.distances import _get_distances
 def _get_cluster_table(
         clusters: str
     ) -> pd.DataFrame:
-
-    if check_file_exists(clusters):
+    try:
+    # if check_file_exists(clusters):
         cluster_df = pd.read_csv(clusters, sep=None, engine='python', dtype=str)
         return cluster_df
-    else:
+    except Exception as e:
+        print(e)
         return pd.DataFrame()
 
 def _get_distance_data(
@@ -302,9 +303,13 @@ def get_cluster_graphs(
     thresholds = _get_thresholds(cluster_df)
     cluster_df = _combine_cluster_ids(cluster_df)
     id_col = cluster_df.columns[0]
-    cdf_all = _cluster_statistics(cluster_df = cluster_df, distances_df = distances_df, thresholds= thresholds, id_col = id_col)
-    graph = _generate_cluster_graphs(cdf_all = cdf_all, clusters= cluster_df, id_col = id_col, thresholds= thresholds)
-    return graph
+    try:
+        cdf_all = _cluster_statistics(cluster_df = cluster_df, distances_df = distances_df, thresholds= thresholds, id_col = id_col)
+        graph = _generate_cluster_graphs(cdf_all = cdf_all, clusters= cluster_df, id_col = id_col, thresholds= thresholds)
+        return graph
+    except Exception as e:
+        print(e)
+        return {}
 
 # <button class="btn btn-sm btn-outline-secondary" style= "margin:2px;" id="information-button" data-bs-toggle="modal" data-bs-target="#myModal"><i class="bi bi-info-circle" style = "font-size: 1.2rem;"></i> Info</button>
 
