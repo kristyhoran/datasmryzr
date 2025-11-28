@@ -115,20 +115,34 @@ def _graph(raw: pd.DataFrame, colname: str, grps:pd.DataFrame, ids:list) -> alt.
     xval = "panaroo_class" if colname == "panaroo_class" else "general_class"
     acc = _get_pangenome_acc(_dtype)
     colors, orders = acc[0], acc[1]
-    raw["order"] = raw[colname].map(orders)
-    summary = alt.Chart(raw, title = "Summary pangenome in dataset").mark_bar().encode(
-                        x=alt.X(f"{xval}").title("Class"),
-                        y = alt.Y("count()").title("Gene count"),
-                        color=alt.Color(f"{colname}").scale(range=colors["_range"], domain=colors["domain"]).title("Gene class"),
-                        order=alt.Order(
-                        # Sort the segments of the bars by this field
-                        'order',
-                        sort='ascending'
-                        )
-                        ).properties(
-                            width=alt.Step(75)
-                        )
-    
+    if colname in raw.columns:
+        
+        raw["order"] = raw[colname].map(orders)
+        summary = alt.Chart(raw, title = "Summary pangenome in dataset").mark_bar().encode(
+                            x=alt.X(f"{xval}").title("Class"),
+                            y = alt.Y("count()").title("Gene count"),
+                            color=alt.Color(f"{colname}").scale(range=colors["_range"], domain=colors["domain"]).title("Gene class"),
+                            order=alt.Order(
+                            # Sort the segments of the bars by this field
+                            'order',
+                            sort='ascending'
+                            )
+                            ).properties(
+                                width=alt.Step(75)
+                            )
+    else:
+        summary = alt.Chart(raw, title = "Summary pangenome in dataset").mark_bar().encode(
+                            x=alt.X(f"{xval}").title("Class"),
+                            y = alt.Y("count()").title("Gene count"),
+                            # color=alt.Color(f"{colname}").scale(range=colors["_range"], domain=colors["domain"]).title("Gene class"),
+                            # order=alt.Order(
+                            # # Sort the segments of the bars by this field
+                            # 'order',
+                            # sort='ascending'
+                            # )
+                            ).properties(
+                                width=alt.Step(75)
+                            )
     charts = []
     
     raw = raw.reset_index()

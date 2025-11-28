@@ -158,7 +158,7 @@
         </button>
         <div id="summary-dashboard" style = "width:60%; margin: 20px; padding: 20px; ">
           <!-- dashborad header block -->
-              <div id= "workflow-summary" style = "display: flex; flex-wrap: wrap; align-items: center; margin-bottom: 20px;">
+              <div id= "workflow-summary" style = "display: none; flex-wrap: wrap; align-items: center; margin-bottom: 20px;">
                 <h4 >Workflow summary</h4>
                 <button class="btn btn-sm btn-outline-secondary" id="workflow-summary-toggle" style = "margin-left: 10px;"><i style = "color:white;" class="bi bi-chevron-bar-contract"></i></button>
               </div>
@@ -727,7 +727,7 @@ function displayWindowSize(){
   // button for tree as newick file
   $(".download-tree-button").click(function(){
     console.log('downloading newick');
-    var tree_name = "klebs test".replace(/\s/g, '_').toLowerCase();
+    var tree_name = "{{download_prefix}}_".replace(/\s/g, '_').toLowerCase();
     var nwk_download = tree.exportNewick();
     var filename = tree_name + '.nwk'
     downloadString(nwk_download,'text',filename);
