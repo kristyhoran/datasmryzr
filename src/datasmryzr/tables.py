@@ -198,6 +198,7 @@ def generate_table(_file :str,
                     'headerFilter':_type,
                     'headerFilterPlaceholder':f'Search {col}',
                     'formatter':"textarea",
+                    "cssClass":"italic-column" if "Species" in col else "",
                     # "minWidth": f"{width if width > 50 else 50}px",
                 }
                 if _type == 'number':
