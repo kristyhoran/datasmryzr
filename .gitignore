@@ -1,0 +1,12 @@
+.vscode
+.pytest_cache
+__pycache__
+.pypirc
+token.json
+*.egg-info
+*.egg
+*.whl
+*.tar.gz
+*.zip
+*.pyc
+deploy.py
