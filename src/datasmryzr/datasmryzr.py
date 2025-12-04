@@ -25,7 +25,7 @@ from datasmryzr.smryz import smryz
 @click.option('--font_color', '-fc', help="Specify the font color of the report", type = str, default = "#ffffff", show_default = True)
 @click.option('--config', '-c', help="Path to the config file", type = str, default = f"{pathlib.Path(__file__).parent / 'templates' / 'base_config.json'}", show_default = True)
 @click.option('--version', '-v', is_flag=True, help="Show the version of datasmryzr.")
-@click.option('--no-downloadable-tables', is_flag=True, default = False, help="Disable downloadable tables in the report.")
+@click.option('--no-downloadable-tables', is_flag=True, help="Disable downloadable tables in the report.")
 @click.option("--pangenome_rtab", "-ptab", type = str, default = "", help = "Path to the gene_presence_absence.Rtab file output from Panaroo.")
 @click.option("--pangenome_characterization", "-pchr", type = str, default = "", help = "Path to the pangenome characterization file output where genes are classified into general_class and specific_class (run as part of the bohra pipelin, adapted from https://github.com/ghoresh11/twilight).")
 @click.option("--pangenome_groups", "-pgrps", type = str, default = "", help = "Path to file for grouping pangenome data.")
@@ -84,7 +84,8 @@ def smryzr(output:str,
         pangenome_rtab = pangenome_rtab,
         pangenome_groups = pangenome_groups,
         pipeline = pipeline,
-        pipeline_version = pipeline_version
+        pipeline_version = pipeline_version,
+        no_downloadable_tables=no_downloadable_tables
     )
     
 

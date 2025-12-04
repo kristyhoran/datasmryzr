@@ -457,11 +457,13 @@ def smryz(
         "metadata_columns": metadata_dict["metadata_columns"],
         "colors_css": metadata_dict["colors_css"],
         "legend": metadata_dict["legend"],
-        "download_prefix": f"{title.replace(' ', '_').replace(':', '_').replace('/', '_').lower()}"
+        "download_prefix": f"{title.replace(' ', '_').replace(':', '_').replace('/', '_').lower()}",
+        "no_downloadable_tables": 'true' if no_downloadable_tables else 'false'
        
        
     }
-    
+    print('true' if no_downloadable_tables else 'false')
+    print(no_downloadable_tables)
     print(f"Loading template {template}...")
     template = _get_template(template)
     target = _get_target(output, title)
