@@ -328,7 +328,8 @@ def smryz(
         pangenome_characterization: str = "",
         pangenome_groups: str = "",
         pipeline: str = "not provided",
-        pipeline_version: str = "not provided"
+        pipeline_version: str = "not provided",
+        no_downloadable_tables: bool = False
 ) -> None:
     
     """

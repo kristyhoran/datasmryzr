@@ -291,7 +291,9 @@
                       <button class="btn btn-sm btn-outline-secondary" style= "margin:2px;" id="graphs-distribution-button" data-bs-toggle="collapse" data-bs-target="#graphs-distribution"><i class="bi bi-file-bar-graph" style = "font-size: 1.2rem;"></i> Graph - distribution</button>
                       <button class="btn btn-sm btn-outline-secondary" style= "margin:2px;" id="graphs-density-button" data-bs-toggle="collapse" data-bs-target="#graphs-density"><i class="bi bi-file-bar-graph" style = "font-size: 1.2rem;"></i> Graph - density</button>
                       <button class="btn btn-sm btn-outline-secondary" style= "margin:2px;" id="graphs-statistics-button" data-bs-toggle="collapse" data-bs-target="#graphs-statistics"><i class="bi bi-file-bar-graph" style = "font-size: 1.2rem;"></i> Graph - statistics</button>
+                      {% if not no_downloadable_tables %}
                       <button class="btn btn-sm btn-outline-secondary" style= "margin:2px;" id="download-button" data-bs-toggle="collapse" data-bs-target="#download-tables"><i class="bi bi-download" style = "font-size: 1.2rem;"></i> Download</button>
+                      {% endif %}
                       <button class="btn btn-sm btn-outline-secondary" style= "margin:2px;" id="information-button" data-bs-toggle="collapse" data-bs-target=""><i class="bi bi-info-circle" style = "font-size: 1.2rem;"></i> Info</button>
                     </div>
                   </div>
