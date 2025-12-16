@@ -209,7 +209,7 @@ def generate_table(_file :str,
                     d["formatterParams"]={
                                             "min":0,
                                             "max":1,
-                                            "color":["orange","green"],
+                                            "color":["#ed671f","#3a9c4a"],
                                         }
                 col_dict[link].append(d)
         _id =1
