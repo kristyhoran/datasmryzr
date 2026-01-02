@@ -318,6 +318,7 @@ def smryz(
         cluster_table: str,
         core_genome: str, 
         core_genome_report: str,
+        numvarsites: int,
         reference: str, 
         mask: str, 
         template: str, 
@@ -417,6 +418,7 @@ def smryz(
         "columns": col_dict,
         "comment": comments,
         "distdict": get_cluster_distances(cluster_table, distance_matrix) if cluster_table != "" and distance_matrix != "" else {},
+        "numvarsites": numvarsites,
         "newick": tree_string,
         "core_genome": _parse_genome_file_name(core_genome_report),
         "snp_distances": make_snp_distances(
