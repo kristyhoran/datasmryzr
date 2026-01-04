@@ -418,7 +418,7 @@ def smryz(
         "columns": col_dict,
         "comment": comments,
         "distdict": get_cluster_distances(cluster_table, distance_matrix) if cluster_table != "" and distance_matrix != "" else {},
-        "numvarsites": f"{numvarsites} variant sites used for tree construction" if numvarsites > 0 else "number of variant sites not provided",
+        "numvarsites": f"{numvarsites} variant sites used for tree construction" if numvarsites > 0 else "Number of variant sites not provided",
         "newick": tree_string,
         "core_genome": _parse_genome_file_name(core_genome_report),
         "snp_distances": make_snp_distances(
