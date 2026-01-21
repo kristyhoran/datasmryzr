@@ -667,7 +667,9 @@ function displayWindowSize(){
       //console.log(menus[i].innerHTML);
       if( menus[i].innerHTML == "mlst" ){
         var new_menu = menus[i].innerHTML.toUpperCase();
-      } else {
+      } else if( menus[i].innerHTML.includes("ska") ){
+        var new_menu = menus[i].innerHTML.replace("ska", "SKA"); 
+        } else {
       var new_menu = capitalizeFirstLetter(menus[i].innerHTML.replace("amr", "AMR"));
     }
       menus[i].innerHTML = new_menu;
