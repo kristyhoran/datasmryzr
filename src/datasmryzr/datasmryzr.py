@@ -19,6 +19,7 @@ from datasmryzr.smryz import smryz
 @click.option('--core-genome', '-cg', help="Specify the path to the file that can be used to generate a distribution of variants across a genome - a core.vcf file", type = str,default = "", show_default = True)
 @click.option('--core-genome-report', '-cgr', help="Specify the path to the file that contaims core genome summary report - required for core genome graph", type = str,default = "", show_default = True)
 @click.option('--numvarsites', '-nvs', help="The number of variant sites used to build tree", type = int, default = 0, show_default = True)
+@click.option('--treebuilder', '-tbd', help="The tree building method", type = str, default = "", show_default = True)
 @click.option('--reference', '-r', help="Specify the path to the reference file that can be used to generate a distribution of variants across a genome. Required if --core-genome is used.", type = str,default = "", show_default = True)
 @click.option('--mask', '-m', help="Specify the path to the mask file that can be used to generate a distribution of variants across a genome. Required if --core-genome is used.", type = str,default = "", show_default = True)
 @click.option('--template', '-tmpl', help="Specify the path to the template file", type = str, default = f"{pathlib.Path(__file__).parent}/templates/report.html.j2", show_default = True)
