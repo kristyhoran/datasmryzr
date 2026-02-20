@@ -29,7 +29,7 @@ def _get_delimiter(file:str) -> str:
             return "\t"
         if "," in line:
             return ","
-    return None
+    raise ValueError(f"Could not determine the delimiter for file: {file}")
 
 def _get_json_data(_file:str,
                    id_col:None) -> dict:
