@@ -234,7 +234,7 @@ def generate_table(_file :str,
                     
             _id = _id + 1
             table_dict[link]['tables'].append(_sample_dict)
-            table_dict[link]['has_graph'] = 'true' if link in cfg["has_graph"] else 'false'
+            table_dict[link]['has_graph'] = 'true' if link in cfg["has_graph"] and "has_graph" in cfg else 'false'
                 # for i in table_dict[link]['tables']:
                 #     if 'plasmid' in i:
                 #         print(i)
