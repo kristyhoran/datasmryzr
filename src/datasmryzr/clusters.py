@@ -33,11 +33,16 @@ def _combine_cluster_ids(
                          clusters:pd.DataFrame) -> pd.DataFrame:
     
     thresholds = _get_thresholds(clusters)
+    
+    # print(thresholds)
     while thresholds:
         threshold = thresholds.pop(0)
+        # print(thresholds)
+        # print(threshold)
         if thresholds != []:
-            print(thresholds)
-            clusters[f"Tx:{thresholds[0]}"] = clusters[[f"Tx:{threshold}", f"Tx:{thresholds[0]}"]].apply(lambda x: ':'.join(x) if not "UC" in f"{x[0]}" else x[0], axis = 1)
+            # print(thresholds)
+            # print(f"Tx:{threshold}")
+            clusters[f"Tx:{thresholds[0]}"] = clusters[[f"Tx:{threshold}", f"Tx:{thresholds[0]}"]].apply(lambda x: ':'.join(x) if not "UC" in f"{x[f'Tx:{threshold}']}" else f"{x[f'Tx:{threshold}']}", axis = 1)
 
     return clusters
 
@@ -61,6 +66,7 @@ def _create_tree_for_traversal(
                     tree[cl] = list(clusters[clusters[f"Tx:{threshold}"] == cl][f"Tx:{thresholds[0]}"].unique())
                 else:
                     tree[cl] = []
+    # print(tree)
     return tree
 
 def _construct_table_dict(tree, node, clusters, visited=None):
@@ -69,17 +75,19 @@ def _construct_table_dict(tree, node, clusters, visited=None):
     # print(type(df))
     cols = list(clusters.columns)
     size = 0
-    print(node)
+    # print(node)
     for col in cols:
-        print(col)
+        # print(col)
         if node in clusters[col].unique():
+            # print(node)
             tmp = clusters[clusters[col] == node]
             size = tmp.shape[0]
             isolates = list(tmp['ID'].unique())
+            # print(isolates)
     # print(type(df))
     if visited is None:
         visited = set()  # Initialize the visited set
-    visited.add(node)    # Mark the node as visited
+    
     # print(node)
    
     data = {'Cluster ID': node, 'Num seqs':size, '_children': []}  # Store the children of the current node
@@ -89,7 +97,10 @@ def _construct_table_dict(tree, node, clusters, visited=None):
                 if "UC" not in child:
                     data['_children'].append(_construct_table_dict(tree = tree, node = child, clusters = clusters, visited=visited))
                 # dfs_recursive(tree, child, clusters, visited)
+    
     # print(data)
+                    visited.add(node)    # Mark the node as visited
+    
     return data
 
 def get_cluster_distances(
@@ -98,21 +109,25 @@ def get_cluster_distances(
     ) -> pd.DataFrame:
     cluster_df = _get_cluster_table(clusters)
     cluster_df = _combine_cluster_ids(cluster_df)
+    # print(cluster_df)
     thresholds = _get_thresholds(cluster_df)
     dists = {}
     if check_file_exists(distances) and not cluster_df.empty:
         distances_df = pd.read_csv(distances, sep = "\t")
         tree = _create_tree_for_traversal(cluster_df)
         id_col = distances_df.columns[0]
-        
+        # print(tree)
         for cl in tree:
+            # print(cl)
             for th in thresholds:
                 if cl in cluster_df[f"Tx:{th}"].values:
-                    
+                    # print("in if : ", cl)
                     isolates = list(cluster_df[cluster_df[f"Tx:{th}"] == cl]['ID'])
+                    # print(isolates)
                     ccols = ["Isolate"]
                     ccols.extend(isolates)
                     dd = distances_df[distances_df["Isolate"].isin(isolates)][ccols]
+                    # print(dd)
                     tbl = dd.to_dict(orient='records')
                     col_dict = []
                     for col in ccols:
@@ -130,6 +145,7 @@ def get_cluster_distances(
                         'table': tbl,
                         'columns': col_dict
                     }
+    # print(dists)
     return dists
 
 def _save_cluster_table(cluster_table: dict) -> str:
@@ -147,9 +163,15 @@ def get_cluster_table(
     cluster_df = _get_cluster_table(clusters)
     # print(cluster_df)
     thresholds = _get_thresholds(cluster_df)
-    
+    # print(thresholds)
     if cluster_df.empty or distances_df.empty:
         return {}
+    elif len(thresholds) == 1:
+        dct = pd.DataFrame(cluster_df[f"Tx:{thresholds[0]}"].value_counts()).reset_index()
+        dct = dct.rename(columns={f"Tx:{thresholds[0]}":"Cluster ID", "count": "Num seqs"})
+        dct = dct[dct["Cluster ID"] != "UC"]
+        # print(dct.to_dict(orient='records'))
+        return _save_cluster_table(dct.to_dict(orient='records'))
     else:
         cluster_df = _combine_cluster_ids(cluster_df)
         tree = _create_tree_for_traversal(cluster_df)
@@ -157,6 +179,7 @@ def get_cluster_table(
         # print(raw_data)
         # cluster_table = _polish_cluster_table(raw_data, 'all')
         
+        # print(cluster_table['_children'])
         return _save_cluster_table(cluster_table['_children'])
     
 def _get_clustered(clusters: str, threshold:int) -> pd.DataFrame:

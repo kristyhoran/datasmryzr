@@ -222,7 +222,9 @@ def make_cluster_stats(
         clusters:str,
         # bar_color:str = "lightblue",
 ):
+    
     if distances != "" and clusters != "":
+        print("Generating cluster statistics...")
         return get_cluster_graphs(
             distances = distances,
             clusters = clusters,
@@ -368,14 +370,16 @@ def smryz(
     comments = {}
     
     filenames = [ i for i in filename if check_file_exists(i) ]
-    
+    print("Initial filenames: ", filenames)
     if distance_matrix != "":
         filenames.append(distance_matrix)
     if core_genome_report != "":
         filenames.append(core_genome_report)
     if cluster_table != "" and distance_matrix != "":
+        print("Getting cluster distances...")
         filenames.append(get_cluster_table(cluster_table, distance_matrix))
         # filenames.remove(cluster_table)
+        # print(cluster_table)
         filenames = [filename for filename in filenames if filename != cluster_table]
     print("Filenames to be processed: ", filenames)
     print(pangenome_groups)

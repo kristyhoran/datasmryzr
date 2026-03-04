@@ -40,6 +40,7 @@ def _get_json_data(_file:str,
     Returns:
         dict: Dictionary representing the content of the JSON file.
     """
+
     with open(_file, 'r') as f:
         json_str = f.read()
         data = ast.literal_eval(json_str)
@@ -74,6 +75,7 @@ def _get_tabular_data(_file:str, dlm:str) -> list:
     Returns:
         list: List of dictionaries representing the rows in the file.
     """
+    print(f"Reading tabular data from file: {_file} with delimiter: {dlm}")
     with open(_file, 'r') as f:
         reader = csv.DictReader(f, delimiter = dlm)
         data = [row for row in reader]
