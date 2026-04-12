@@ -54,11 +54,13 @@ def _get_offset(reference:str) -> tuple:
         records = list(SeqIO.parse(reference, "fasta"))
     if records != []:
         for record in records:
+            # print(record.seq)
             d[record.id.split('.')[0]] = {
                 'offset' : offset, 
                 'length': len(record.seq)
                 }
             offset += len(record.seq)
+    # print(d)
     return d, offset
 
 def get_bin_size(_dict:dict) -> int:
@@ -155,6 +157,7 @@ def _get_vcf(vcf_file:str) -> pd.DataFrame:
     reader = csv.reader(_read_vcf(vcf_file), delimiter='\t')
     header = next(reader)
     rows = list(reader)
+    print()
     return pd.DataFrame(rows, columns=header)
 
 
@@ -184,7 +187,7 @@ def _plot_snpdensity(reference:str,
     Returns:
         dict: Altair chart object.
     """
-
+    print("Processing VCF file for SNP density plot...")
 
     for _file in [reference, vcf_file]:
         if not check_file_exists(_file):
@@ -195,31 +198,32 @@ def _plot_snpdensity(reference:str,
     chromosomes = list(_dict.keys())
     results = _get_vcf(vcf_file )    
     _maxbins = get_bin_size(_dict = _dict)
-    vars = {}
+    _vars = {}
     for result in results.iterrows():
+        # print(result)
         for chromosome  in chromosomes: 
-                if chromosome not in vars: 
-                    vars[chromosome] = {}
+                if chromosome not in _vars: 
+                    _vars[chromosome] = {}
                 if chromosome in result[1]["#CHROM"]: 
                     pos = int(result[1]["POS"]) 
                     for col in result[1].keys(): 
                         if col in VCF_COLUMNS_TO_IGNORE:
                             continue
                         if result[1][col] != '0': 
-                            if pos not in vars[chromosome]: 
-                                vars[chromosome][pos] = 1
+                            if pos not in _vars[chromosome]: 
+                                _vars[chromosome][pos] = 1
                             else:
-                                vars[chromosome][pos] = vars[chromosome][pos] + 1
+                                _vars[chromosome][pos] = _vars[chromosome][pos] + 1
 
     data = {}
-    for var in vars:
-        for pos in vars[var]:
+    for var in _vars:
+        for pos in _vars[var]:
             offset = _dict[var]['offset']
-            data[pos + offset] = vars[var][pos]
+            data[pos + offset] = _vars[var][pos]
     df = pd.DataFrame.from_dict(data, orient='index',columns=['vars']).reset_index()
     
     df = check_masked(mask_file = mask_file, df = df,_dict = _dict)
-    
+    print(df)
     for_contigs = get_contig_breaks(_dict = _dict)
     domain = ['masked', 'unmasked']
     range_ = ['#d9dcde', f"{bar_color}"]
@@ -255,6 +259,7 @@ def _plot_stats(core_genome_report:str,
         alt.Chart: Altair chart object.
     """
     if check_file_exists(core_genome_report):
+        # print(f"Generating core genome statistics plot from {core_genome_report}...")
         df = pd.read_csv(core_genome_report, sep='\t')
         df['% Not aligned'] = df['Unaligned'] / df['Length'] * 100
     

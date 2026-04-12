@@ -43,7 +43,7 @@ datasmryzr = "datasmryzr.datasmryzr:smryzr"
 
 
 [tool.hatch.version]
-path = "src/datasmryzr/__about__.py"
+path = "src/datasmryzr/__init__.py"
 
 [tool.hatch.envs.types]
 extra-dependencies = [

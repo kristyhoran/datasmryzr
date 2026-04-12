@@ -550,8 +550,8 @@ function displayWindowSize(){
                               columns: distance_dict[cell.getRow().getData()['Cluster ID']]['columns'],
                               layout: "fitColumns",
                               pagination: "local",
-                              paginationSize: 10,
-                              paginationSizeSelector: [5, 10, 20, 50],
+                              paginationSize: 1000,
+                              paginationSizeSelector: [ 1000, 2000],
                               height: "400px",
                           });
                           console.log("Button clicked for row ID: " + cell.getRow().getData()['Cluster ID']);
@@ -575,8 +575,8 @@ function displayWindowSize(){
             columns: columns,
             layout: layout,
             pagination: "local",
-            paginationSize: 10,
-            paginationSizeSelector: [5, 10, 20, 50],
+            paginationSize: 1000,
+            paginationSizeSelector: [1000, 1500],
             height: "100%",
             movableColumns: true
             // ...options

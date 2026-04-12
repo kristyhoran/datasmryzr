@@ -151,6 +151,11 @@ def make_density_plot(
     """
     print("Generating SNP density plot...")
     if core_genome != "" and reference != "":
+        print('Files provided for SNP density plot: ')
+        print(f"Core genome VCF file: {core_genome}")
+        print(f"Reference genome file: {reference}")
+        if mask != "":
+            print(f"Mask file: {mask}")
         return _plot_snpdensity(
             vcf_file = core_genome,
             reference = reference,
