@@ -22,7 +22,8 @@ VCF_COLUMNS_TO_IGNORE = ['#CHROM',
                          'QUAL', 
                          'FILTER', 
                          'INFO', 
-                         'FORMAT']
+                         'FORMAT',
+                         'Reference']
 
 def check_file_exists(file_path: str) -> bool:
     """
@@ -60,7 +61,7 @@ def _get_offset(reference:str) -> tuple:
                 'length': len(record.seq)
                 }
             offset += len(record.seq)
-    # print(d)
+    print(d)
     return d, offset
 
 def get_bin_size(_dict:dict) -> int:
@@ -138,10 +139,10 @@ def _read_vcf(vcf_file:str) -> str:
     """
     try:
         with gzip.open(vcf_file, 'rt') as f:
-            return [line for line in f if not line.startswith('##')]
+            return [line.strip() for line in f if not line.startswith('##')]
     except gzip.BadGzipFile:
         with open(vcf_file, 'r') as f:
-            return [line for line in f if not line.startswith('##')]
+            return [line.strip() for line in f if not line.startswith('##')]
     except Exception as e:
         raise SystemError(f"Error reading VCF file: {e}")
 
@@ -157,7 +158,8 @@ def _get_vcf(vcf_file:str) -> pd.DataFrame:
     reader = csv.reader(_read_vcf(vcf_file), delimiter='\t')
     header = next(reader)
     rows = list(reader)
-    print()
+    header = [h for h in header if h not in [""]]
+    print(header)
     return pd.DataFrame(rows, columns=header)
 
 
