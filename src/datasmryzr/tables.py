@@ -206,7 +206,7 @@ def generate_table(_file :str,
                 if _type == 'number':
                     d['headerFilterFunc'] = ">="
                     d['headerFilterPlaceholder'] = f'At least...'  
-                if col == "Data assessment":
+                if col == "QA":
                     d["formatter"] = "traffic"
                     d["formatterParams"]={
                                             "min":0,
